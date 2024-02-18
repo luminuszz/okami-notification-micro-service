@@ -1,0 +1,66 @@
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = "linux-musl-openssl-3.0.x"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model Notification {
+  id        String   @id 
+  recipientId String @unique
+  content   String
+  createdAt DateTime @default(now())
+  readAt    DateTime?
+  
+}
+
+model Channel {
+  id        String   @id
+  name      String
+  createdAt DateTime @default(now())
+  description String
+  subscribers Subscriber[]
+}
+
+
+model Subscriber {
+  id           String   @id
+  telegramId   String?   @unique
+  createdAt    DateTime @default(now())
+  recipientId  String   @unique
+  channels     Channel[]
+  webPushSubscriptions WebPushSubscription[]
+  mobileSubscriptions MobileSubscription[]
+  
+}
+
+model WebPushSubscription {
+  id           String   @id
+  p256dh       String
+  auth         String
+  createdAt    DateTime
+  updatedAt    DateTime @updatedAt
+  subscriberId String 
+  endpoint     String
+  subscriber Subscriber @relation(fields: [subscriberId], references: [id])
+
+  }
+
+
+model MobileSubscription {
+  id           String   @id
+
+  subscriberId String 
+  subscriptionToken String @unique
+  subscriber Subscriber @relation(fields: [subscriberId], references: [id])
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  }

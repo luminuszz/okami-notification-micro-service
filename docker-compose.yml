@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+
+  db:
+   image: postgres
+   ports:
+     - "${DB_PORT}:${DB_PORT}"
+   container_name: okami-notification-microservice-db
+   hostname: okami-notification-microservice-db
+   volumes:
+     - db-data:/var/lib/postgresql/data
+   env_file:
+     - .env
+   environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  api:
+    volumes:
+      - ./src/:/app/src
+      - ./prisma/schema.prisma/:/app/prisma/schema.prisma
+      - ./package.json:/app/package.json
+      - ./pnpm-lock.yaml:/app/pnpm-lock.yaml
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: okami-notification-microservice
+    ports:
+      - "${PORT}:${PORT}"
+      - "5555:5555"
+    env_file:
+      - .env
+
+
+volumes:
+  db-data:
