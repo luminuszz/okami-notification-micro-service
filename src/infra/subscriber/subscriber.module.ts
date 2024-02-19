@@ -5,6 +5,7 @@ import { CreateMobilePushSubscription } from '@domain/subscriber/use-cases/creat
 import { CreateSubscriber } from '@domain/subscriber/use-cases/create-subscriber';
 import { UpdateSubscriber } from '@domain/subscriber/use-cases/update-subscriber';
 import { SubscribeInChannel } from '@domain/subscriber/use-cases/subscribe-in-channel';
+import { DeleteWebPushSubscription } from '@domain/subscriber/use-cases/delete-web-push-subscription';
 
 @Module({
   imports: [PrismaModule],
@@ -14,6 +15,7 @@ import { SubscribeInChannel } from '@domain/subscriber/use-cases/subscribe-in-ch
     CreateSubscriber,
     UpdateSubscriber,
     SubscribeInChannel,
+    DeleteWebPushSubscription,
   ],
   exports: [
     CreateWebPushSubscription,
@@ -21,6 +23,7 @@ import { SubscribeInChannel } from '@domain/subscriber/use-cases/subscribe-in-ch
     CreateSubscriber,
     UpdateSubscriber,
     SubscribeInChannel,
+    DeleteWebPushSubscription,
   ],
 })
 export class SubscriberModule {}

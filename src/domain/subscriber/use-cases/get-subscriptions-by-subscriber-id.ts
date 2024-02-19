@@ -2,7 +2,7 @@ import { Either, right } from '@core/either';
 import { SubscriberRepository } from './repositories/subscriber-repository';
 import { Subscriber } from '../entities/subscriber';
 
-type Response = Either<void, { subscriber: Subscriber }>;
+type Response = Either<void, { subscriber: Subscriber | null }>;
 
 export class GetSubscriptionBySubscriberId {
   constructor(private readonly subscriberRepository: SubscriberRepository) {}

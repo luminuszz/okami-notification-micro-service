@@ -7,8 +7,17 @@ import { PrismaModule } from '../database/prisma.module';
 import { EnvService } from '../env/env.service';
 import { NotificationEventEmitter } from './notification-event-emitter';
 import { OneSignalNotificationPublisher } from './providers/one-sginal-notification-handler';
+import { DeleteWebPushSubscription } from '@domain/subscriber/use-cases/delete-web-push-subscription';
+import { TelegramNotificationHandler } from './providers/telegram-notification-handler';
+import { WebPushNotificationHandler } from './providers/web-push-notification-handlers';
 
 const DomainEventsHandlers = [OnNotificationCreated];
+
+const NotificationProvidersHandlers = [
+  OneSignalNotificationPublisher,
+  TelegramNotificationHandler,
+  WebPushNotificationHandler,
+];
 
 @Module({
   imports: [
@@ -24,15 +33,12 @@ const DomainEventsHandlers = [OnNotificationCreated];
     }),
   ],
   providers: [
+    { provide: NotificationPublisher, useClass: NotificationEventEmitter },
     ...DomainEventsHandlers,
+    ...NotificationProvidersHandlers,
     SendNotificationUseCase,
     NotificationEventEmitter,
-    { provide: NotificationPublisher, useClass: NotificationEventEmitter },
-    {
-      provide: NotificationPublisher,
-      useClass: NotificationEventEmitter,
-    },
-    OneSignalNotificationPublisher,
+    DeleteWebPushSubscription,
   ],
   exports: [SendNotificationUseCase],
 })

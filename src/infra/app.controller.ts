@@ -6,6 +6,12 @@ import { RegisterSubscriberInChannelDto } from './dto/register-subscriber-in-cha
 import { SubscribeInChannel } from '@domain/subscriber/use-cases/subscribe-in-channel';
 import { SendNotificationDto } from './dto/send-notification.dto';
 import { SendNotificationUseCase } from '@domain/notification/use-cases/send-notification';
+import { RegisterTelegramChatIdDto } from './dto/register-telegram-chat-id';
+import { UpdateSubscriber } from '@domain/subscriber/use-cases/update-subscriber';
+import { CreateMobilePushSubscriptionDto } from './dto/create-mobile-push-subscription.dto';
+import { CreateMobilePushSubscription } from '@domain/subscriber/use-cases/create-mobile-push-subscription';
+import { CreateWebPushSubscriptionDto } from './dto/create-web-push-subscription.dto';
+import { CreateWebPushSubscription } from '@domain/subscriber/use-cases/create-web-push-subscription';
 
 @Controller('client')
 export class AppController {
@@ -13,6 +19,9 @@ export class AppController {
     private readonly createSubscriber: CreateSubscriber,
     private readonly subscribeInChannel: SubscribeInChannel,
     private readonly sendNotification: SendNotificationUseCase,
+    private readonly updateSubscriber: UpdateSubscriber,
+    private readonly createSubscriberMobilePush: CreateMobilePushSubscription,
+    private readonly createWebPushSubscription: CreateWebPushSubscription,
   ) {}
 
   @EventPattern('new-subscriber')
@@ -33,6 +42,35 @@ export class AppController {
     await this.sendNotification.execute({
       content,
       recipientId,
+    });
+  }
+
+  @MessagePattern('register-telegram-chat')
+  async registerTelegramChat(@Payload() { telegramChatId, subscriberId }: RegisterTelegramChatIdDto) {
+    await this.updateSubscriber.execute({
+      telegramChatId,
+      subscriberId,
+    });
+  }
+
+  @MessagePattern('create-mobile-push-subscription')
+  async addMobileSubscription(@Payload() { mobileTokenPush, subscriberId }: CreateMobilePushSubscriptionDto) {
+    await this.createSubscriberMobilePush.execute({
+      subscriberId,
+      subscriptionToken: mobileTokenPush,
+    });
+  }
+
+  @MessagePattern('create-web-push-subscription')
+  async addWebSubscription(
+    @Payload()
+    { subscriberId, endpoint, webPushSubscriptionAuth, webPushSubscriptionP256dh }: CreateWebPushSubscriptionDto,
+  ) {
+    await this.createWebPushSubscription.execute({
+      subscriberId,
+      endpoint,
+      webPushSubscriptionAuth,
+      webPushSubscriptionP256dh,
     });
   }
 }

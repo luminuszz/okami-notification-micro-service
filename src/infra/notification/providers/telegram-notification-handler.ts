@@ -3,8 +3,9 @@ import { NotificationEventEmitter } from '../notification-event-emitter';
 import { Notification } from '@domain/notification/notifications';
 import { Telegraf } from 'telegraf';
 import { NotificationContentParsed } from './dto/notification-parsed.dto';
-import { OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 
+@Injectable()
 export class TelegramNotificationHandler implements OnModuleDestroy {
   private readonly telegraf: Telegraf;
 
