@@ -33,11 +33,11 @@ const NotificationProvidersHandlers = [
     }),
   ],
   providers: [
+    NotificationEventEmitter,
     { provide: NotificationPublisher, useClass: NotificationEventEmitter },
     ...DomainEventsHandlers,
     ...NotificationProvidersHandlers,
     SendNotificationUseCase,
-    NotificationEventEmitter,
     DeleteWebPushSubscription,
   ],
   exports: [SendNotificationUseCase],

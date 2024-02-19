@@ -1,12 +1,11 @@
 import { z } from 'zod';
 
 export const envSchema = z.object({
-  PORT: z.coerce.number(),
-  DB_PORT: z.coerce.number(),
-  POSTGRES_DB: z.string(),
-  POSTGRES_PASSWORD: z.string(),
-  POSTGRES_USER: z.string(),
-  POSTGRES_HOST: z.string(),
+  DB_PORT: z.coerce.number().optional(),
+  POSTGRES_DB: z.string().optional(),
+  POSTGRES_PASSWORD: z.string().optional(),
+  POSTGRES_USER: z.string().optional(),
+  POSTGRES_HOST: z.string().optional(),
   AMQP_URL: z.string(),
   DATABASE_URL: z.string(),
   ONE_SIGNAL_SERVICE_ENDPOINT: z.string(),
