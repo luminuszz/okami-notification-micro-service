@@ -41,6 +41,8 @@ export class PrismaWebPushSubscriptionRepository implements WePushSubscriptionRe
   }
 
   async create(webPushSubscription: WebPushSubscription): Promise<void> {
+    console.log(webPushSubscription);
+
     await this.prisma.webPushSubscription.create({
       data: {
         p256dh: webPushSubscription.webPushSubscriptionP256dh,

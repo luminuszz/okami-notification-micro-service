@@ -10,6 +10,7 @@ import { OneSignalNotificationPublisher } from './providers/one-sginal-notificat
 import { DeleteWebPushSubscription } from '@domain/subscriber/use-cases/delete-web-push-subscription';
 import { TelegramNotificationHandler } from './providers/telegram-notification-handler';
 import { WebPushNotificationHandler } from './providers/web-push-notification-handlers';
+import { FindSubscriberByRecipientId } from '@domain/subscriber/use-cases/find-subscriber-by-recipient-id';
 
 const DomainEventsHandlers = [OnNotificationCreated];
 
@@ -39,6 +40,7 @@ const NotificationProvidersHandlers = [
     ...NotificationProvidersHandlers,
     SendNotificationUseCase,
     DeleteWebPushSubscription,
+    FindSubscriberByRecipientId,
   ],
   exports: [SendNotificationUseCase],
 })

@@ -1,17 +1,17 @@
+import { SendNotificationUseCase } from '@domain/notification/use-cases/send-notification';
+import { CreateMobilePushSubscription } from '@domain/subscriber/use-cases/create-mobile-push-subscription';
+import { CreateSubscriber } from '@domain/subscriber/use-cases/create-subscriber';
+import { CreateWebPushSubscription } from '@domain/subscriber/use-cases/create-web-push-subscription';
+import { SubscribeInChannel } from '@domain/subscriber/use-cases/subscribe-in-channel';
+import { UpdateSubscriberTelegramChatId } from '@domain/subscriber/use-cases/update-subscriber-telegram-chat-id';
 import { Controller } from '@nestjs/common';
 import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
-import { NewSubscriberDto } from './dto/new-subscriber.dto';
-import { CreateSubscriber } from '@domain/subscriber/use-cases/create-subscriber';
-import { RegisterSubscriberInChannelDto } from './dto/register-subscriber-in-channel.dto';
-import { SubscribeInChannel } from '@domain/subscriber/use-cases/subscribe-in-channel';
-import { SendNotificationDto } from './dto/send-notification.dto';
-import { SendNotificationUseCase } from '@domain/notification/use-cases/send-notification';
-import { RegisterTelegramChatIdDto } from './dto/register-telegram-chat-id';
-import { UpdateSubscriber } from '@domain/subscriber/use-cases/update-subscriber';
 import { CreateMobilePushSubscriptionDto } from './dto/create-mobile-push-subscription.dto';
-import { CreateMobilePushSubscription } from '@domain/subscriber/use-cases/create-mobile-push-subscription';
 import { CreateWebPushSubscriptionDto } from './dto/create-web-push-subscription.dto';
-import { CreateWebPushSubscription } from '@domain/subscriber/use-cases/create-web-push-subscription';
+import { NewSubscriberDto } from './dto/new-subscriber.dto';
+import { RegisterSubscriberInChannelDto } from './dto/register-subscriber-in-channel.dto';
+import { RegisterTelegramChatIdDto } from './dto/register-telegram-chat-id';
+import { SendNotificationDto } from './dto/send-notification.dto';
 import { EnvService } from './env/env.service';
 
 @Controller('client')
@@ -20,7 +20,7 @@ export class AppController {
     private readonly createSubscriber: CreateSubscriber,
     private readonly subscribeInChannel: SubscribeInChannel,
     private readonly sendNotification: SendNotificationUseCase,
-    private readonly updateSubscriber: UpdateSubscriber,
+    private readonly updateSubscriberTelegramChatId: UpdateSubscriberTelegramChatId,
     private readonly createSubscriberMobilePush: CreateMobilePushSubscription,
     private readonly createWebPushSubscription: CreateWebPushSubscription,
     private readonly env: EnvService,
@@ -49,16 +49,16 @@ export class AppController {
 
   @MessagePattern('register-telegram-chat')
   async registerTelegramChat(@Payload() { telegramChatId, subscriberId }: RegisterTelegramChatIdDto) {
-    await this.updateSubscriber.execute({
+    await this.updateSubscriberTelegramChatId.execute({
       telegramChatId,
-      subscriberId,
+      recipientId: subscriberId,
     });
   }
 
   @MessagePattern('create-mobile-push-subscription')
   async addMobileSubscription(@Payload() { mobileTokenPush, subscriberId }: CreateMobilePushSubscriptionDto) {
     await this.createSubscriberMobilePush.execute({
-      subscriberId,
+      recipientId: subscriberId,
       subscriptionToken: mobileTokenPush,
     });
   }
@@ -71,15 +71,12 @@ export class AppController {
   }
 
   @MessagePattern('create-web-push-subscription')
-  async addWebSubscription(
-    @Payload()
-    { subscriberId, endpoint, webPushSubscriptionAuth, webPushSubscriptionP256dh }: CreateWebPushSubscriptionDto,
-  ) {
+  async addWebSubscription(@Payload() payload: CreateWebPushSubscriptionDto) {
     await this.createWebPushSubscription.execute({
-      subscriberId,
-      endpoint,
-      webPushSubscriptionAuth,
-      webPushSubscriptionP256dh,
+      recipientId: payload.subscriberId,
+      endpoint: payload.endpoint,
+      webPushSubscriptionAuth: payload.webPushSubscriptionAuth,
+      webPushSubscriptionP256dh: payload.webPushSubscriptionP256dh,
     });
   }
 }

@@ -98,4 +98,14 @@ export class PrismaSubscriberRepository implements SubscriberRepository {
 
     return results ? this.toEntity(results) : null;
   }
+
+  async findByRecipientId(recipientId: string): Promise<Subscriber | null> {
+    const results = await this.prisma.subscriber.findUnique({
+      where: {
+        recipientId,
+      },
+    });
+
+    return results ? this.toEntity(results) : null;
+  }
 }
