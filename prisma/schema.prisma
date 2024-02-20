@@ -13,11 +13,11 @@ datasource db {
 
 model Notification {
   id        String   @id 
-  recipientId String @unique
-  content   String
+  subscriberId String @unique
+  content   String 
   createdAt DateTime @default(now())
   readAt    DateTime?
-  susbscriber Subscriber @relation(fields: [recipientId], references: [id])
+  susbscriber Subscriber @relation(fields: [subscriberId], references: [id])
   
 }
 

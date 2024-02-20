@@ -4,7 +4,7 @@ import { Subscriber } from '@domain/subscriber/entities/subscriber';
 
 export interface NotificationProps {
   content: string;
-  recipientId: string;
+  subscriberId: string;
   readAt?: Date | null;
   createdAt: Date;
   recipient?: Subscriber;
@@ -25,8 +25,8 @@ export class Notification extends AggregateRoot<NotificationProps> {
     return this.props.content;
   }
 
-  get recipientId(): string {
-    return this.props.recipientId;
+  get subscriberId(): string {
+    return this.props.subscriberId;
   }
 
   get readAt() {

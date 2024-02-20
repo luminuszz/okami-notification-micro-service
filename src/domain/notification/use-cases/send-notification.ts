@@ -35,7 +35,7 @@ export class SendNotificationUseCase
 
     const notification = Notification.create({
       content,
-      recipientId: subscriber.id,
+      subscriberId: subscriber.id,
       createdAt: new Date(),
     });
 

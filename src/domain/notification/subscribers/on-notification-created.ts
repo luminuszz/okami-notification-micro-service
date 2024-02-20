@@ -18,7 +18,7 @@ export class OnNotificationCreated implements DomainEventHandler<NotificationCre
   }
 
   async handle({ notification }: NotificationCreated): Promise<void> {
-    const subscriber = await this.subscriberRepository.getSubscriptions(notification.recipientId);
+    const subscriber = await this.subscriberRepository.getSubscriptions(notification.subscriberId);
 
     if (subscriber) {
       this.notificationPublisher.publish({
