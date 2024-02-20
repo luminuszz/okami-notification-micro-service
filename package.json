@@ -16,7 +16,7 @@
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:cov": "vitest --coverage",
-    "dev": "docker compose up -d ",
+    "dev": "docker compose up ",
     "prisma-studio": "prisma studio"
   },
   "dependencies": {

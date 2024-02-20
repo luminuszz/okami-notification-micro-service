@@ -25,10 +25,9 @@ services:
       - ./pnpm-lock.yaml:/app/pnpm-lock.yaml
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./docker/dockerfile
     container_name: okami-notification-microservice
     ports:
-      - "${PORT}:${PORT}"
       - "5555:5555"
     env_file:
       - .env

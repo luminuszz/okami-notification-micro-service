@@ -12,6 +12,7 @@ import { CreateMobilePushSubscriptionDto } from './dto/create-mobile-push-subscr
 import { CreateMobilePushSubscription } from '@domain/subscriber/use-cases/create-mobile-push-subscription';
 import { CreateWebPushSubscriptionDto } from './dto/create-web-push-subscription.dto';
 import { CreateWebPushSubscription } from '@domain/subscriber/use-cases/create-web-push-subscription';
+import { EnvService } from './env/env.service';
 
 @Controller('client')
 export class AppController {
@@ -22,6 +23,7 @@ export class AppController {
     private readonly updateSubscriber: UpdateSubscriber,
     private readonly createSubscriberMobilePush: CreateMobilePushSubscription,
     private readonly createWebPushSubscription: CreateWebPushSubscription,
+    private readonly env: EnvService,
   ) {}
 
   @EventPattern('new-subscriber')
@@ -37,7 +39,7 @@ export class AppController {
     });
   }
 
-  @EventPattern('send-notification')
+  @EventPattern('create-notification')
   async publishNotification(@Payload() { content, recipientId }: SendNotificationDto) {
     await this.sendNotification.execute({
       content,
@@ -59,6 +61,13 @@ export class AppController {
       subscriberId,
       subscriptionToken: mobileTokenPush,
     });
+  }
+
+  @MessagePattern('send-web-push-public-key')
+  async sendPublicKey() {
+    return {
+      publicKey: this.env.get('WEB_PUSH_PUBLIC_KEY'),
+    };
   }
 
   @MessagePattern('create-web-push-subscription')
