@@ -29,7 +29,7 @@ const NotificationProvidersHandlers = [
       useFactory: (env: EnvService) => ({
         baseURL: env.get('ONE_SIGNAL_SERVICE_ENDPOINT'),
         headers: {
-          Authorization: `Basic ${env.get('ONE_SIGNAL_SERVICE_ENDPOINT')}`,
+          Authorization: `Basic ${env.get('ONE_SIGNAL_API_TOKEN')}`,
         },
       }),
       inject: [EnvService],
