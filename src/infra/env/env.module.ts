@@ -7,7 +7,7 @@ import { envSchema } from './env.schema';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      validate: (env) => envSchema.parse(env),
+      validate: (env) => envSchema.passthrough().parse(env),
       isGlobal: true,
     }),
   ],
