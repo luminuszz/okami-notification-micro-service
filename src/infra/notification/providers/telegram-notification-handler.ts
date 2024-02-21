@@ -40,7 +40,7 @@ export class TelegramNotificationHandler implements OnModuleDestroy {
 
     if (!subscriber.telegramChatId) return;
 
-    const caption = this.parseContent(`${content.message.toString()}\n\n${content.name}`);
+    const caption = this.parseContent(`${content.message.toString()}\n\n${content.url}`);
 
     const isAllowedImageFiletype = ['png', 'jpg', 'jpeg', 'webp'].includes(content?.imageUrl?.split('.')?.pop() ?? '');
 

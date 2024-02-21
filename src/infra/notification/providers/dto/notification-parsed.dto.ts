@@ -3,4 +3,5 @@ export interface NotificationContentParsed {
   imageUrl: string;
   chapter: number;
   message: string;
+  url: string;
 }
