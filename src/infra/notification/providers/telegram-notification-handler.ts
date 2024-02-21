@@ -42,7 +42,7 @@ export class TelegramNotificationHandler implements OnModuleDestroy {
 
     const caption = this.parseContent(`${content.message.toString()}\n\n${content.name}`);
 
-    const isAllowedImageFiletype = ['png', 'jpg', 'jpeg'].includes(content.imageUrl);
+    const isAllowedImageFiletype = ['png', 'jpg', 'jpeg', 'webp'].includes(content?.imageUrl?.split('.')?.pop() ?? '');
 
     if (isAllowedImageFiletype) {
       this.telegraf.telegram.sendPhoto(subscriber.telegramChatId, content.imageUrl, {
