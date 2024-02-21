@@ -21,7 +21,7 @@ export class OneSignalNotificationPublisher {
     this.httpService.post('notifications', {
       app_id: this.envService.get('ONE_SIGNAL_APP_ID'),
       include_aliases: {
-        external_id: [subscriber.id],
+        include_subscription_ids: subscriber.webPushSubscriptions?.map((item) => item.subscriberId),
       },
       contents: {
         en: content.message,
