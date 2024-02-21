@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { NotificationEventEmitter } from '../notification-event-emitter';
 import { EnvService } from '@app/infra/env/env.service';
+import { NotificationPublisherPayload } from '@domain/notification/notification-publisher';
 import { HttpService } from '@nestjs/axios';
-import { Notification } from '@domain/notification/notifications';
+import { Injectable } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
+import { NotificationEventEmitter } from '../notification-event-emitter';
 import { NotificationContentParsed } from './dto/notification-parsed.dto';
 
 @Injectable()
@@ -11,15 +12,11 @@ export class OneSignalNotificationPublisher {
     private readonly notificationEventEmitter: NotificationEventEmitter,
     private readonly envService: EnvService,
     private readonly httpService: HttpService,
-  ) {
-    this.notificationEventEmitter.subscriberToNotification({
-      name: OneSignalNotificationPublisher.name,
-      handle: this.publish.bind(this),
-    });
-  }
+  ) {}
 
-  public async publish(notification: Notification): Promise<void> {
-    const { content, subscriber } = JSON.parse(notification.content) as NotificationContentParsed;
+  @OnEvent('notification.created')
+  public async publish({ notification, subscriber }: NotificationPublisherPayload): Promise<void> {
+    const content = JSON.parse(notification.content) as NotificationContentParsed;
 
     this.httpService.post('notifications', {
       app_id: this.envService.get('ONE_SIGNAL_APP_ID'),

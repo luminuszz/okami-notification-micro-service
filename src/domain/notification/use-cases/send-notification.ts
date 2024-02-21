@@ -29,6 +29,8 @@ export class SendNotificationUseCase
   async execute({ content, recipientId }: SendNotificationUseCaseProps): Promise<SendNotificationUseCaseResponse> {
     const results = await this.findSubscriberByRecipientId.execute({ recipientId: recipientId });
 
+    console.log({ results });
+
     if (results.isLeft()) return left(results.value);
 
     const { subscriber } = results.value;

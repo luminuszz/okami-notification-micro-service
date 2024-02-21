@@ -13,7 +13,7 @@ datasource db {
 
 model Notification {
   id        String   @id 
-  subscriberId String @unique
+  subscriberId String
   content   String 
   createdAt DateTime @default(now())
   readAt    DateTime?

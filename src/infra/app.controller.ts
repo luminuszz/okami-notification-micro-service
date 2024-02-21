@@ -41,6 +41,8 @@ export class AppController {
 
   @EventPattern('create-notification')
   async publishNotification(@Payload() { content, recipientId }: SendNotificationDto) {
+    console.log('publishNotification', content, recipientId);
+
     await this.sendNotification.execute({
       content,
       recipientId,

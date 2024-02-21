@@ -25,6 +25,8 @@ export class DomainEvents {
   public static dispatchAggregateEvents(id: UniqueEntityID): void {
     const aggregate = DomainEvents.findMarkedAggregateByID(id);
 
+    console.log(aggregate?.domainEvents);
+
     if (!aggregate) {
       return;
     }

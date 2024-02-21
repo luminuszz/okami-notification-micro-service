@@ -11,6 +11,7 @@ import { DeleteWebPushSubscription } from '@domain/subscriber/use-cases/delete-w
 import { TelegramNotificationHandler } from './providers/telegram-notification-handler';
 import { WebPushNotificationHandler } from './providers/web-push-notification-handlers';
 import { FindSubscriberByRecipientId } from '@domain/subscriber/use-cases/find-subscriber-by-recipient-id';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 const DomainEventsHandlers = [OnNotificationCreated];
 
@@ -22,6 +23,7 @@ const NotificationProvidersHandlers = [
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
     PrismaModule,
     HttpModule.registerAsync({
       useFactory: (env: EnvService) => ({

@@ -1,23 +1,17 @@
 import { EnvService } from '@app/infra/env/env.service';
+import { NotificationPublisherPayload } from '@domain/notification/notification-publisher';
+import { DeleteWebPushSubscription } from '@domain/subscriber/use-cases/delete-web-push-subscription';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as WebPush from 'web-push';
-import { NotificationEventEmitter } from '../notification-event-emitter';
 import { NotificationContentParsed } from './dto/notification-parsed.dto';
-import { Notification } from '@domain/notification/notifications';
-import { DeleteWebPushSubscription } from '@domain/subscriber/use-cases/delete-web-push-subscription';
+import { OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
 export class WebPushNotificationHandler implements OnModuleInit {
   constructor(
     private readonly env: EnvService,
-    private notificationEmitter: NotificationEventEmitter,
     private readonly deleteWebPushSubscription: DeleteWebPushSubscription,
-  ) {
-    this.notificationEmitter.subscriberToNotification({
-      handle: this.handleSubscription.bind(this),
-      name: WebPushNotificationHandler.name,
-    });
-  }
+  ) {}
 
   onModuleInit() {
     WebPush.setVapidDetails(
@@ -27,14 +21,16 @@ export class WebPushNotificationHandler implements OnModuleInit {
     );
   }
 
-  async handleSubscription(notification: Notification) {
-    const { content, subscriber } = JSON.parse(notification.content) as NotificationContentParsed;
+  @OnEvent('notification.created')
+  async handleSubscription({ notification, subscriber }: NotificationPublisherPayload) {
+    const content = JSON.parse(notification.content) as NotificationContentParsed;
 
     if (!subscriber.webPushSubscriptions?.length) return;
 
     const { webPushSubscriptions } = subscriber;
 
     for (const subscription of webPushSubscriptions) {
+      console.log('Sending web push notification', { subscription, content });
       try {
         await WebPush.sendNotification(
           {

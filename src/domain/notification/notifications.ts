@@ -1,6 +1,7 @@
 import { AggregateRoot } from '@core/aggregate-root';
 import { UniqueEntityID } from '@core/entities/unique-entity-id';
 import { Subscriber } from '@domain/subscriber/entities/subscriber';
+import { NotificationCreated } from './events/notification-created';
 
 export interface NotificationProps {
   content: string;
@@ -16,6 +17,10 @@ export class Notification extends AggregateRoot<NotificationProps> {
 
     this.props.createdAt = props.createdAt ?? new Date();
     this.props.readAt = props.readAt ?? null;
+
+    if (!id) {
+      this.addDomainEvent(new NotificationCreated(this));
+    }
   }
   public static create(props: NotificationProps, id?: UniqueEntityID): Notification {
     return new Notification(props, id);
