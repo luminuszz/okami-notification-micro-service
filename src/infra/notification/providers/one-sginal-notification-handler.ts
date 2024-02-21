@@ -18,6 +18,8 @@ export class OneSignalNotificationPublisher {
   public async publish({ notification, subscriber }: NotificationPublisherPayload): Promise<void> {
     const content = JSON.parse(notification.content) as NotificationContentParsed;
 
+    if (!subscriber.webPushSubscriptions?.length) return;
+
     this.httpService.post('notifications', {
       app_id: this.envService.get('ONE_SIGNAL_APP_ID'),
       include_aliases: {
