@@ -58,10 +58,10 @@ export class AppController {
   }
 
   @MessagePattern('create-mobile-push-subscription')
-  async addMobileSubscription(@Payload() { mobileTokenPush, subscriberId }: CreateMobilePushSubscriptionDto) {
+  async addMobileSubscription(@Payload() { subscriptionToken, subscriberId }: CreateMobilePushSubscriptionDto) {
     await this.createSubscriberMobilePush.execute({
       recipientId: subscriberId,
-      subscriptionToken: mobileTokenPush,
+      subscriptionToken,
     });
   }
 
