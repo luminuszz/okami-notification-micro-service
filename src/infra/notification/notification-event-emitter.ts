@@ -8,6 +8,15 @@ export class NotificationEventEmitter implements NotificationPublisher {
 
   async publish({ notification, subscriber }: NotificationPublisherPayload) {
     console.log('Publishing notification', notification, 'to', subscriber);
-    this.eventEmitter.emit('notification.created', { notification, subscriber });
+
+    const needNotifyAll = notification?.channels?.includes('all');
+
+    if (needNotifyAll) {
+      this.eventEmitter.emit(`notification.created`, { notification, subscriber });
+    } else {
+      notification.channels?.forEach((channel) => {
+        this.eventEmitter.emit(`notification.created-in-channel-${channel}`, { notification, subscriber });
+      });
+    }
   }
 }

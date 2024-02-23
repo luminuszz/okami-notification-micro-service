@@ -81,4 +81,15 @@ export class AppController {
       webPushSubscriptionP256dh: payload.webPushSubscriptionP256dh,
     });
   }
+
+  @MessagePattern('notificaiton.send-to-channel')
+  async sendNotificationToChannel(@Payload() payload: SendNotificationDto) {
+    console.log('sendNotificationToChannel', payload);
+
+    await this.sendNotification.execute({
+      content: payload.content,
+      recipientId: payload.recipientId,
+      channels: payload.channels,
+    });
+  }
 }

@@ -3,12 +3,22 @@ import { UniqueEntityID } from '@core/entities/unique-entity-id';
 import { Subscriber } from '@domain/subscriber/entities/subscriber';
 import { NotificationCreated } from './events/notification-created';
 
+export const Channels = {
+  TELEGRAM: 'telegram',
+  WEB_PUSH: 'web-push',
+  MOBILE_PUSH: 'mobile-push',
+  ALL: 'all',
+} as const;
+
+export type ChannelsLabels = (typeof Channels)[keyof typeof Channels];
+
 export interface NotificationProps {
   content: string;
   subscriberId: string;
   readAt?: Date | null;
   createdAt: Date;
   recipient?: Subscriber;
+  channels?: ChannelsLabels[];
 }
 
 export class Notification extends AggregateRoot<NotificationProps> {
@@ -17,6 +27,7 @@ export class Notification extends AggregateRoot<NotificationProps> {
 
     this.props.createdAt = props.createdAt ?? new Date();
     this.props.readAt = props.readAt ?? null;
+    this.props.channels = props.channels ?? [];
 
     if (!id) {
       this.addDomainEvent(new NotificationCreated(this));
@@ -48,5 +59,9 @@ export class Notification extends AggregateRoot<NotificationProps> {
 
   get recipient() {
     return this.props.recipient;
+  }
+
+  get channels() {
+    return this.props.channels;
   }
 }

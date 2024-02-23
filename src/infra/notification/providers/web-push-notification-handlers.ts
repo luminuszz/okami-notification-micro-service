@@ -5,6 +5,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as WebPush from 'web-push';
 import { NotificationContentParsed } from './dto/notification-parsed.dto';
 import { OnEvent } from '@nestjs/event-emitter';
+import { Channels } from '@domain/notification/notifications';
 
 @Injectable()
 export class WebPushNotificationHandler implements OnModuleInit {
@@ -21,7 +22,7 @@ export class WebPushNotificationHandler implements OnModuleInit {
     );
   }
 
-  @OnEvent('notification.created')
+  @OnEvent(['notification.created', `notification.created-in-channel-${Channels.TELEGRAM}`])
   async handleSubscription({ notification, subscriber }: NotificationPublisherPayload) {
     const content = JSON.parse(notification.content) as NotificationContentParsed;
 
