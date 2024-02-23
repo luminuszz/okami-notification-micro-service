@@ -3,14 +3,12 @@ import { NotificationPublisherPayload } from '@domain/notification/notification-
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { NotificationEventEmitter } from '../notification-event-emitter';
-import { NotificationContentParsed } from './dto/notification-parsed.dto';
 import { map } from 'lodash';
+import { NotificationContentParsed } from './dto/notification-parsed.dto';
 
 @Injectable()
 export class OneSignalNotificationPublisher {
   constructor(
-    private readonly notificationEventEmitter: NotificationEventEmitter,
     private readonly envService: EnvService,
     private readonly httpService: HttpService,
   ) {}
@@ -25,15 +23,17 @@ export class OneSignalNotificationPublisher {
 
     const subscribersTokens = map(subscriber.mobilePushSubscriptions, 'subscriptionToken');
 
-    this.logger.log(`Sending notification to ${subscribersTokens.join(', ')}`);
-
-    this.httpService.post('notifications', {
-      app_id: this.envService.get('ONE_SIGNAL_APP_ID'),
-      include_subscription_ids: subscribersTokens,
-      contents: {
-        en: content.message,
-      },
-      big_picture: content.imageUrl,
-    });
+    this.httpService
+      .post('notifications', {
+        app_id: this.envService.get('ONE_SIGNAL_APP_ID'),
+        include_subscription_ids: subscribersTokens,
+        contents: {
+          en: content.message,
+        },
+        big_picture: content.imageUrl,
+      })
+      .subscribe((response) =>
+        this.logger.log(`Notification sent to ${subscribersTokens.length} subscribers. Response: ${response.data?.id}`),
+      );
   }
 }
