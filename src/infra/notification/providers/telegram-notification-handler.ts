@@ -4,7 +4,7 @@ import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { Telegraf } from 'telegraf';
 import { NotificationContentParsed } from './dto/notification-parsed.dto';
-import { Channels } from '@domain/notification/notifications';
+import { EventCreators } from './utils';
 
 @Injectable()
 export class TelegramNotificationHandler implements OnModuleDestroy {
@@ -35,7 +35,7 @@ export class TelegramNotificationHandler implements OnModuleDestroy {
       .replaceAll('<', '\\<');
   }
 
-  @OnEvent(['notification.created', `notification.created-in-channel-${Channels.TELEGRAM}`])
+  @OnEvent(EventCreators.telegram('on-new-chapter'))
   public async publish({ notification, subscriber }: NotificationPublisherPayload): Promise<void> {
     const content = JSON.parse(notification.content) as NotificationContentParsed;
 

@@ -18,7 +18,8 @@ model Notification {
   createdAt DateTime @default(now())
   readAt    DateTime?
   susbscriber Subscriber @relation(fields: [subscriberId], references: [id])
-  channels String[] @default(["all"])
+  channels String[] @default([])
+  providers String[] @default(["all"])
   
 }
 

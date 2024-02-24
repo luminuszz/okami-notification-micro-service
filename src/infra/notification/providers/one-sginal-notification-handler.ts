@@ -5,7 +5,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { map } from 'lodash';
 import { NotificationContentParsed } from './dto/notification-parsed.dto';
-import { Channels } from '@domain/notification/notifications';
+import { EventCreators } from './utils';
 
 @Injectable()
 export class OneSignalNotificationPublisher {
@@ -16,7 +16,7 @@ export class OneSignalNotificationPublisher {
 
   private logger = new Logger(OneSignalNotificationPublisher.name);
 
-  @OnEvent(['notification.created', `notification.created-in-channel-${Channels.MOBILE_PUSH}`])
+  @OnEvent(EventCreators.mobilePush('on-new-chapter'))
   public async publish({ notification, subscriber }: NotificationPublisherPayload): Promise<void> {
     const content = JSON.parse(notification.content) as NotificationContentParsed;
 

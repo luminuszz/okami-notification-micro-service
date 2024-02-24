@@ -3,14 +3,15 @@ import { UseCaseImplementation } from '@core/use-case';
 import { Injectable } from '@nestjs/common';
 import { InvalidNotificationOperation } from '../errors/invalid-notification-operation';
 import { NotificationRepository } from '../notification.repository';
-import { ChannelsLabels, Notification } from '../notifications';
+import { ChannelsLabels, Notification, ProvidersLabels } from '../notifications';
 import { FindSubscriberByRecipientId } from '@domain/subscriber/use-cases/find-subscriber-by-recipient-id';
 import { ResourceNotFound } from '@domain/subscriber/use-cases/errors/resource-not-found';
 
 interface SendNotificationUseCaseProps {
   content: string;
   recipientId: string;
-  channels?: ChannelsLabels[];
+  channels: ChannelsLabels[];
+  providers: ProvidersLabels[];
 }
 
 type SendNotificationUseCaseResponse = Either<
@@ -31,6 +32,7 @@ export class SendNotificationUseCase
     content,
     recipientId,
     channels,
+    providers,
   }: SendNotificationUseCaseProps): Promise<SendNotificationUseCaseResponse> {
     const results = await this.findSubscriberByRecipientId.execute({ recipientId: recipientId });
 
@@ -44,7 +46,8 @@ export class SendNotificationUseCase
       content,
       subscriberId: subscriber.id,
       createdAt: new Date(),
-      channels: channels?.length ? channels : ['all'],
+      channels: channels,
+      providers: providers,
     });
 
     await this.notificationRepo.create(notification);

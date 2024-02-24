@@ -1,7 +1,8 @@
-import { ChannelsLabels } from '@domain/notification/notifications';
+import { ChannelsLabels, ProvidersLabels } from '@domain/notification/notifications';
 
 export class SendNotificationDto {
   content: string;
   recipientId: string;
-  channels?: ChannelsLabels[];
+  channels: ChannelsLabels[];
+  providers: ProvidersLabels[];
 }

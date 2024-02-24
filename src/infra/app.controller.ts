@@ -40,12 +40,12 @@ export class AppController {
   }
 
   @EventPattern('create-notification')
-  async publishNotification(@Payload() { content, recipientId }: SendNotificationDto) {
-    console.log('publishNotification', content, recipientId);
-
+  async publishNotification(@Payload() payload: SendNotificationDto) {
     await this.sendNotification.execute({
-      content,
-      recipientId,
+      content: payload.content,
+      recipientId: payload.recipientId,
+      channels: payload.channels,
+      providers: payload.providers,
     });
   }
 
@@ -79,17 +79,6 @@ export class AppController {
       endpoint: payload.endpoint,
       webPushSubscriptionAuth: payload.webPushSubscriptionAuth,
       webPushSubscriptionP256dh: payload.webPushSubscriptionP256dh,
-    });
-  }
-
-  @MessagePattern('notificaiton.send-to-channel')
-  async sendNotificationToChannel(@Payload() payload: SendNotificationDto) {
-    console.log('sendNotificationToChannel', payload);
-
-    await this.sendNotification.execute({
-      content: payload.content,
-      recipientId: payload.recipientId,
-      channels: payload.channels,
     });
   }
 }

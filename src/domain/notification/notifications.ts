@@ -4,13 +4,18 @@ import { Subscriber } from '@domain/subscriber/entities/subscriber';
 import { NotificationCreated } from './events/notification-created';
 
 export const Channels = {
+  ON_NEW_CHAPTER: 'on-new-chapter',
+} as const;
+
+export const Providers = {
+  ALL: 'all',
   TELEGRAM: 'telegram',
   WEB_PUSH: 'web-push',
   MOBILE_PUSH: 'mobile-push',
-  ALL: 'all',
 } as const;
 
 export type ChannelsLabels = (typeof Channels)[keyof typeof Channels];
+export type ProvidersLabels = (typeof Providers)[keyof typeof Providers];
 
 export interface NotificationProps {
   content: string;
@@ -19,6 +24,7 @@ export interface NotificationProps {
   createdAt: Date;
   recipient?: Subscriber;
   channels?: ChannelsLabels[];
+  providers?: ProvidersLabels[];
 }
 
 export class Notification extends AggregateRoot<NotificationProps> {
@@ -63,5 +69,9 @@ export class Notification extends AggregateRoot<NotificationProps> {
 
   get channels() {
     return this.props.channels;
+  }
+
+  get providers() {
+    return this.props.providers;
   }
 }

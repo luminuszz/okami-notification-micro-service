@@ -2,10 +2,10 @@ import { EnvService } from '@app/infra/env/env.service';
 import { NotificationPublisherPayload } from '@domain/notification/notification-publisher';
 import { DeleteWebPushSubscription } from '@domain/subscriber/use-cases/delete-web-push-subscription';
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
 import * as WebPush from 'web-push';
 import { NotificationContentParsed } from './dto/notification-parsed.dto';
-import { OnEvent } from '@nestjs/event-emitter';
-import { Channels } from '@domain/notification/notifications';
+import { EventCreators } from './utils';
 
 @Injectable()
 export class WebPushNotificationHandler implements OnModuleInit {
@@ -22,7 +22,7 @@ export class WebPushNotificationHandler implements OnModuleInit {
     );
   }
 
-  @OnEvent(['notification.created', `notification.created-in-channel-${Channels.TELEGRAM}`])
+  @OnEvent(EventCreators.webPush('on-new-chapter'))
   async handleSubscription({ notification, subscriber }: NotificationPublisherPayload) {
     const content = JSON.parse(notification.content) as NotificationContentParsed;
 
