@@ -8,6 +8,7 @@ export interface SubscriberProps {
   recipientId: string;
   createdAt?: Date;
   updatedAt?: Date;
+  email: string;
   telegramChatId?: string;
 
   channels?: Channel[];
@@ -55,5 +56,9 @@ export class Subscriber extends AggregateRoot<SubscriberProps> {
 
   public get webPushSubscriptions() {
     return this.props.webPushSubscriptions;
+  }
+
+  public get email() {
+    return this.props.email;
   }
 }

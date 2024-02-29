@@ -3,7 +3,7 @@ import { Providers } from '@domain/notification/notifications';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { flatMap, map, values } from 'lodash';
-import { createChannelSubscriber } from './providers/utils';
+import { createChannelSubscriber } from './handlers/utils';
 
 @Injectable()
 export class NotificationEventEmitter implements NotificationPublisher {

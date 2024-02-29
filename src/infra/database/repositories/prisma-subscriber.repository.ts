@@ -27,6 +27,7 @@ export class PrismaSubscriberRepository implements SubscriberRepository {
         recipientId: subscriber.recipientId,
         telegramChatId: subscriber.telegramId || '',
         createdAt: subscriber.createdAt,
+        email: subscriber.email ?? '',
         mobilePushSubscriptions: map(subscriber.mobileSubscriptions, (content) =>
           MobilePushSubscription.create(
             {
@@ -103,6 +104,16 @@ export class PrismaSubscriberRepository implements SubscriberRepository {
     const results = await this.prisma.subscriber.findUnique({
       where: {
         recipientId,
+      },
+    });
+
+    return results ? this.toEntity(results) : null;
+  }
+
+  async findByEmail(email: string): Promise<Subscriber | null> {
+    const results = await this.prisma.subscriber.findUnique({
+      where: {
+        email,
       },
     });
 

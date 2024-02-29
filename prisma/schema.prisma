@@ -34,7 +34,8 @@ model Channel {
 
 model Subscriber {
   id           String   @id
-  telegramId   String?   @unique
+  email        String?  @unique
+  telegramId   String?  @unique
   createdAt    DateTime @default(now())
   recipientId  String   @unique
   channels     Channel[]

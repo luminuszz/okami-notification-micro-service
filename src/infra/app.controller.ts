@@ -3,14 +3,12 @@ import { CreateMobilePushSubscription } from '@domain/subscriber/use-cases/creat
 import { CreateSubscriber } from '@domain/subscriber/use-cases/create-subscriber';
 import { CreateWebPushSubscription } from '@domain/subscriber/use-cases/create-web-push-subscription';
 import { SubscribeInChannel } from '@domain/subscriber/use-cases/subscribe-in-channel';
-import { UpdateSubscriberTelegramChatId } from '@domain/subscriber/use-cases/update-subscriber-telegram-chat-id';
 import { Controller } from '@nestjs/common';
 import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 import { CreateMobilePushSubscriptionDto } from './dto/create-mobile-push-subscription.dto';
 import { CreateWebPushSubscriptionDto } from './dto/create-web-push-subscription.dto';
 import { NewSubscriberDto } from './dto/new-subscriber.dto';
 import { RegisterSubscriberInChannelDto } from './dto/register-subscriber-in-channel.dto';
-import { RegisterTelegramChatIdDto } from './dto/register-telegram-chat-id';
 import { SendNotificationDto } from './dto/send-notification.dto';
 import { EnvService } from './env/env.service';
 
@@ -20,7 +18,6 @@ export class AppController {
     private readonly createSubscriber: CreateSubscriber,
     private readonly subscribeInChannel: SubscribeInChannel,
     private readonly sendNotification: SendNotificationUseCase,
-    private readonly updateSubscriberTelegramChatId: UpdateSubscriberTelegramChatId,
     private readonly createSubscriberMobilePush: CreateMobilePushSubscription,
     private readonly createWebPushSubscription: CreateWebPushSubscription,
     private readonly env: EnvService,
@@ -46,14 +43,6 @@ export class AppController {
       recipientId: payload.recipientId,
       channels: payload.channels,
       providers: payload.providers,
-    });
-  }
-
-  @MessagePattern('register-telegram-chat')
-  async registerTelegramChat(@Payload() { telegramChatId, subscriberId }: RegisterTelegramChatIdDto) {
-    await this.updateSubscriberTelegramChatId.execute({
-      telegramChatId,
-      recipientId: subscriberId,
     });
   }
 

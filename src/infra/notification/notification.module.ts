@@ -6,12 +6,15 @@ import { Module } from '@nestjs/common';
 import { PrismaModule } from '../database/prisma.module';
 import { EnvService } from '../env/env.service';
 import { NotificationEventEmitter } from './notification-event-emitter';
-import { OneSignalNotificationPublisher } from './providers/one-sginal-notification-handler';
+import { OneSignalNotificationPublisher } from './handlers/one-sginal-notification-handler';
 import { DeleteWebPushSubscription } from '@domain/subscriber/use-cases/delete-web-push-subscription';
-import { TelegramNotificationHandler } from './providers/telegram-notification-handler';
-import { WebPushNotificationHandler } from './providers/web-push-notification-handlers';
+import { TelegramNotificationHandler } from './handlers/telegram-notification-handler';
+import { WebPushNotificationHandler } from './handlers/web-push-notification-handlers';
 import { FindSubscriberByRecipientId } from '@domain/subscriber/use-cases/find-subscriber-by-recipient-id';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { TelegrafProvider } from './providers/telegraf.provider';
+import { UpdateSubscriberTelegramChatId } from '@domain/subscriber/use-cases/update-subscriber-telegram-chat-id';
+import { FindSubscriberByEmail } from '@domain/subscriber/use-cases/find-subscriber-by-email';
 
 const DomainEventsHandlers = [OnNotificationCreated];
 
@@ -36,14 +39,17 @@ const NotificationProvidersHandlers = [
     }),
   ],
   providers: [
+    TelegrafProvider,
     NotificationEventEmitter,
+    UpdateSubscriberTelegramChatId,
     { provide: NotificationPublisher, useClass: NotificationEventEmitter },
     ...DomainEventsHandlers,
     ...NotificationProvidersHandlers,
     SendNotificationUseCase,
     DeleteWebPushSubscription,
+    FindSubscriberByEmail,
     FindSubscriberByRecipientId,
   ],
-  exports: [SendNotificationUseCase],
+  exports: [SendNotificationUseCase, TelegrafProvider],
 })
 export class NotificationModule {}

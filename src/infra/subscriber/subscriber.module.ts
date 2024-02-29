@@ -8,6 +8,7 @@ import { SubscribeInChannel } from '@domain/subscriber/use-cases/subscribe-in-ch
 import { DeleteWebPushSubscription } from '@domain/subscriber/use-cases/delete-web-push-subscription';
 import { FindSubscriberByRecipientId } from '@domain/subscriber/use-cases/find-subscriber-by-recipient-id';
 import { UpdateSubscriberTelegramChatId } from '@domain/subscriber/use-cases/update-subscriber-telegram-chat-id';
+import { FindSubscriberByEmail } from '@domain/subscriber/use-cases/find-subscriber-by-email';
 
 @Module({
   imports: [PrismaModule],
@@ -20,6 +21,7 @@ import { UpdateSubscriberTelegramChatId } from '@domain/subscriber/use-cases/upd
     DeleteWebPushSubscription,
     FindSubscriberByRecipientId,
     UpdateSubscriberTelegramChatId,
+    FindSubscriberByEmail,
   ],
   exports: [
     CreateWebPushSubscription,
@@ -30,6 +32,7 @@ import { UpdateSubscriberTelegramChatId } from '@domain/subscriber/use-cases/upd
     DeleteWebPushSubscription,
     FindSubscriberByRecipientId,
     UpdateSubscriberTelegramChatId,
+    FindSubscriberByEmail,
   ],
 })
 export class SubscriberModule {}

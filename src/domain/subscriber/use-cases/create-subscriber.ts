@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 
 export interface CreateSubscriberProps {
   recipientId: string;
-
+  email: string;
   telegramChatId?: string;
   webPushSubscriptionAuth?: string;
   webPushSubscriptionP256dh?: string;
@@ -23,6 +23,7 @@ export class CreateSubscriber implements UseCaseImplementation<CreateSubscriberP
     const subscriber = Subscriber.create({
       recipientId: payload.recipientId,
       telegramChatId: payload.telegramChatId,
+      email: payload.email,
     });
 
     await this.subscriberRepository.create(subscriber);
