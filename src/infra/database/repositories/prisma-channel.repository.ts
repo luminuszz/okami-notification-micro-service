@@ -25,6 +25,7 @@ export class PrismaChannelRepository implements ChannelRepository {
             recipientId: subscriber.recipientId,
             telegramChatId: subscriber.telegramId || '',
             createdAt: subscriber.createdAt,
+            email: subscriber.email ?? '',
           },
           new UniqueEntityID(subscriber.id),
         );
