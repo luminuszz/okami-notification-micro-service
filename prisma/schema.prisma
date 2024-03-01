@@ -1,6 +1,5 @@
-
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["linux-musl-openssl-3.0.x", "debian-openssl-3.0.x"]
 }
 
@@ -9,63 +8,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 model Notification {
-  id        String   @id 
+  id           String     @id
   subscriberId String
-  content   String 
-  createdAt DateTime @default(now())
-  readAt    DateTime?
-  susbscriber Subscriber @relation(fields: [subscriberId], references: [id])
-  channels String[] @default([])
-  providers String[] @default(["all"])
-  
+  content      String
+  createdAt    DateTime   @default(now())
+  readAt       DateTime?
+  channels     String[]   @default([])
+  providers    String[]   @default(["all"])
+  susbscriber  Subscriber @relation(fields: [subscriberId], references: [id])
 }
 
 model Channel {
-  id        String   @id
-  name      String
-  createdAt DateTime @default(now())
+  id          String       @id
+  name        String
+  createdAt   DateTime     @default(now())
   description String
-  subscribers Subscriber[]
+  subscribers Subscriber[] @relation("ChannelToSubscriber")
 }
 
-
 model Subscriber {
-  id           String   @id
-  email        String?  @unique
-  telegramId   String?  @unique
-  createdAt    DateTime @default(now())
-  recipientId  String   @unique
-  channels     Channel[]
+  id                   String                @id
+  telegramId           String?               @unique
+  createdAt            DateTime              @default(now())
+  recipientId          String                @unique
+  email                String?               @unique
+  mobileSubscriptions  MobileSubscription[]
+  notifications        Notification[]
   webPushSubscriptions WebPushSubscription[]
-  mobileSubscriptions MobileSubscription[]
-  notifications Notification[]
-  
+  channels             Channel[]             @relation("ChannelToSubscriber")
+  authCode             String? @map("auth_code")
 }
 
 model WebPushSubscription {
-  id           String   @id
+  id           String     @id
   p256dh       String
   auth         String
   createdAt    DateTime
-  updatedAt    DateTime @updatedAt
-  subscriberId String 
+  updatedAt    DateTime   @updatedAt
+  subscriberId String
   endpoint     String
-  subscriber Subscriber @relation(fields: [subscriberId], references: [id])
-
-  }
-
+  subscriber   Subscriber @relation(fields: [subscriberId], references: [id])
+}
 
 model MobileSubscription {
-  id           String   @id
-
-  subscriberId String 
-  subscriptionToken String @unique
-  subscriber Subscriber @relation(fields: [subscriberId], references: [id])
-
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  }
+  id                String     @id
+  subscriberId      String
+  subscriptionToken String     @unique
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  subscriber        Subscriber @relation(fields: [subscriberId], references: [id])
+}

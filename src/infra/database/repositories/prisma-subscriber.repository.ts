@@ -28,6 +28,7 @@ export class PrismaSubscriberRepository implements SubscriberRepository {
         telegramChatId: subscriber.telegramId || '',
         createdAt: subscriber.createdAt,
         email: subscriber.email ?? '',
+        authCode: subscriber.authCode ?? '',
         mobilePushSubscriptions: map(subscriber.mobileSubscriptions, (content) =>
           MobilePushSubscription.create(
             {
@@ -82,6 +83,8 @@ export class PrismaSubscriberRepository implements SubscriberRepository {
       },
       data: {
         telegramId: subscriber.telegramChatId,
+        authCode: subscriber.authCode,
+        email: subscriber.email,
       },
     });
   }

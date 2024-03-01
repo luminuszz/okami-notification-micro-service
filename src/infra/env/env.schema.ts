@@ -14,6 +14,7 @@ export const envSchema = z.object({
   WEB_PUSH_PUBLIC_KEY: z.string(),
   WEB_PUSH_PRIVATE_KEY: z.string(),
   TELEGRAM_NOTIFICATION_BOT: z.string(),
+  RESEND_API_SECRET_KEY: z.string(),
 });
 
 export type EnvType = z.infer<typeof envSchema>;
