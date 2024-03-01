@@ -9,9 +9,11 @@ import { DeleteWebPushSubscription } from '@domain/subscriber/use-cases/delete-w
 import { FindSubscriberByRecipientId } from '@domain/subscriber/use-cases/find-subscriber-by-recipient-id';
 import { UpdateSubscriberTelegramChatId } from '@domain/subscriber/use-cases/update-subscriber-telegram-chat-id';
 import { FindSubscriberByEmail } from '@domain/subscriber/use-cases/find-subscriber-by-email';
+import { SendAuthCodeEmail } from '@domain/subscriber/use-cases/send-auth-code-mail';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, MailModule],
   providers: [
     CreateWebPushSubscription,
     CreateMobilePushSubscription,
@@ -22,6 +24,7 @@ import { FindSubscriberByEmail } from '@domain/subscriber/use-cases/find-subscri
     FindSubscriberByRecipientId,
     UpdateSubscriberTelegramChatId,
     FindSubscriberByEmail,
+    SendAuthCodeEmail,
   ],
   exports: [
     CreateWebPushSubscription,
@@ -33,6 +36,7 @@ import { FindSubscriberByEmail } from '@domain/subscriber/use-cases/find-subscri
     FindSubscriberByRecipientId,
     UpdateSubscriberTelegramChatId,
     FindSubscriberByEmail,
+    SendAuthCodeEmail,
   ],
 })
 export class SubscriberModule {}

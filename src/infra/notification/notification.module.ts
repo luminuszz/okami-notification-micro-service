@@ -15,6 +15,9 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TelegrafProvider } from './providers/telegraf.provider';
 import { UpdateSubscriberTelegramChatId } from '@domain/subscriber/use-cases/update-subscriber-telegram-chat-id';
 import { FindSubscriberByEmail } from '@domain/subscriber/use-cases/find-subscriber-by-email';
+import { MailModule } from '../mail/mail.module';
+import { SendAuthCodeEmail } from '@domain/subscriber/use-cases/send-auth-code-mail';
+import { CompareSubscriberAuthCode } from '@domain/subscriber/use-cases/compare-subscriber-auth-code';
 
 const DomainEventsHandlers = [OnNotificationCreated];
 
@@ -26,6 +29,7 @@ const NotificationProvidersHandlers = [
 
 @Module({
   imports: [
+    MailModule,
     EventEmitterModule.forRoot(),
     PrismaModule,
     HttpModule.registerAsync({
@@ -48,6 +52,8 @@ const NotificationProvidersHandlers = [
     SendNotificationUseCase,
     DeleteWebPushSubscription,
     FindSubscriberByEmail,
+    SendAuthCodeEmail,
+    CompareSubscriberAuthCode,
     FindSubscriberByRecipientId,
   ],
   exports: [SendNotificationUseCase, TelegrafProvider],

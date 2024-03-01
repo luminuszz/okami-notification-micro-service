@@ -14,6 +14,7 @@ export interface SubscriberProps {
   channels?: Channel[];
   mobilePushSubscriptions?: MobilePushSubscription[];
   webPushSubscriptions?: WebPushSubscription[];
+  authCode?: string;
 }
 
 export class Subscriber extends AggregateRoot<SubscriberProps> {
@@ -23,6 +24,7 @@ export class Subscriber extends AggregateRoot<SubscriberProps> {
     this.props.createdAt = props.createdAt ?? new Date();
     this.props.mobilePushSubscriptions = props.mobilePushSubscriptions ?? [];
     this.props.webPushSubscriptions = props.webPushSubscriptions ?? [];
+    this.props.authCode = props.authCode;
   }
 
   public static create(props: SubscriberProps, id?: UniqueEntityID): Subscriber {
@@ -60,5 +62,18 @@ export class Subscriber extends AggregateRoot<SubscriberProps> {
 
   public get email() {
     return this.props.email;
+  }
+
+  get authCode() {
+    return this.props.authCode as string;
+  }
+
+  public set authCode(authCode: string) {
+    this.props.authCode = authCode;
+    this.update();
+  }
+
+  public compareAuthCode(authCode: string) {
+    return this.props.authCode === authCode;
   }
 }

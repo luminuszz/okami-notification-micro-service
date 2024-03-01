@@ -33,6 +33,7 @@
     "lodash": "^4.17.21",
     "prisma": "^5.9.1",
     "reflect-metadata": "^0.2.0",
+    "resend": "^3.2.0",
     "rxjs": "^7.8.1",
     "telegraf": "^4.15.3",
     "web-push": "^3.6.7",
