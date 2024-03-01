@@ -28,7 +28,7 @@ RUN apt-get update -qq && \
 COPY --link package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile --prod=false
 
-# Generate Prisma Client
+# Generate Prisma Client and Deploy
 COPY --link prisma .
 RUN npx prisma generate
 
@@ -51,4 +51,4 @@ RUN apt-get update -qq && \
 COPY --from=build /app /app
 
 
-CMD [ "pnpm", "run", "start" ]
+CMD [ "pnpm", "run", "start:prod" ]

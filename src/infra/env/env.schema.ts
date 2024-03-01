@@ -6,7 +6,6 @@ export const envSchema = z.object({
   POSTGRES_PASSWORD: z.string().optional(),
   POSTGRES_USER: z.string().optional(),
   POSTGRES_HOST: z.string().optional(),
-  AMQP_URL: z.string(),
   DATABASE_URL: z.string(),
   ONE_SIGNAL_SERVICE_ENDPOINT: z.string(),
   ONE_SIGNAL_API_TOKEN: z.string(),
@@ -15,6 +14,10 @@ export const envSchema = z.object({
   WEB_PUSH_PRIVATE_KEY: z.string(),
   TELEGRAM_NOTIFICATION_BOT: z.string(),
   RESEND_API_SECRET_KEY: z.string(),
+  REDIS_HOST: z.string(),
+  REDIS_PORT: z.coerce.number(),
+  REDIS_USER: z.string(),
+  REDIS_PASSWORD: z.string(),
 });
 
 export type EnvType = z.infer<typeof envSchema>;
