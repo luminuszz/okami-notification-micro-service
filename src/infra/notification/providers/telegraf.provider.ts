@@ -35,6 +35,7 @@ export class TelegrafProvider implements OnModuleDestroy {
     this.instance.start((ctx) => {
       console.log('started:', ctx.from);
       ctx.reply('Bem vindo ao Okami Bot Notifier');
+      ctx.reply('Para receber notificações das suas obras favoritas, use o comando /vincularchat');
     });
 
     this.runVincularChatCommand();
