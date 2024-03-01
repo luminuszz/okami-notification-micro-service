@@ -11,6 +11,7 @@ import { NewSubscriberDto } from './dto/new-subscriber.dto';
 import { RegisterSubscriberInChannelDto } from './dto/register-subscriber-in-channel.dto';
 import { SendNotificationDto } from './dto/send-notification.dto';
 import { EnvService } from './env/env.service';
+import { FindSubscriberByRecipientId } from '@domain/subscriber/use-cases/find-subscriber-by-recipient-id';
 
 @Controller('client')
 export class AppController {
@@ -20,6 +21,7 @@ export class AppController {
     private readonly sendNotification: SendNotificationUseCase,
     private readonly createSubscriberMobilePush: CreateMobilePushSubscription,
     private readonly createWebPushSubscription: CreateWebPushSubscription,
+    private readonly findSubscriberByRecipientId: FindSubscriberByRecipientId,
     private readonly env: EnvService,
   ) {}
 
@@ -30,28 +32,39 @@ export class AppController {
 
   @MessagePattern('register-subscriber-in-channel')
   async registerSubscriberInChannel(@Payload() payload: RegisterSubscriberInChannelDto) {
-    await this.subscribeInChannel.execute({
+    const response = await this.subscribeInChannel.execute({
       channelId: payload.channelId,
       subscriberId: payload.subscriberId,
     });
+    if (response.isLeft()) {
+      throw response.value;
+    }
   }
 
   @EventPattern('create-notification')
   async publishNotification(@Payload() payload: SendNotificationDto) {
-    await this.sendNotification.execute({
+    const response = await this.sendNotification.execute({
       content: payload.content,
       recipientId: payload.recipientId,
       channels: payload.channels,
       providers: payload.providers,
     });
+
+    if (response.isLeft()) {
+      throw response.value;
+    }
   }
 
   @MessagePattern('create-mobile-push-subscription')
   async addMobileSubscription(@Payload() { subscriptionToken, subscriberId }: CreateMobilePushSubscriptionDto) {
-    await this.createSubscriberMobilePush.execute({
+    const response = await this.createSubscriberMobilePush.execute({
       recipientId: subscriberId,
       subscriptionToken,
     });
+
+    if (response.isLeft()) {
+      throw response.value;
+    }
   }
 
   @MessagePattern('send-web-push-public-key')
@@ -63,11 +76,33 @@ export class AppController {
 
   @MessagePattern('create-web-push-subscription')
   async addWebSubscription(@Payload() payload: CreateWebPushSubscriptionDto) {
-    await this.createWebPushSubscription.execute({
+    const response = await this.createWebPushSubscription.execute({
       recipientId: payload.subscriberId,
       endpoint: payload.endpoint,
       webPushSubscriptionAuth: payload.webPushSubscriptionAuth,
       webPushSubscriptionP256dh: payload.webPushSubscriptionP256dh,
     });
+
+    if (response.isLeft()) {
+      throw response.value;
+    }
+  }
+
+  @MessagePattern('get-subscriber')
+  async getSubscriber(@Payload() { recipientId }: { recipientId: string }) {
+    const response = await this.findSubscriberByRecipientId.execute({ recipientId });
+
+    if (response.isLeft()) {
+      throw response.value;
+    }
+
+    const { subscriber } = response.value;
+
+    return {
+      id: subscriber.id,
+      email: subscriber.email,
+      recipientId: subscriber.recipientId,
+      telegramChatId: subscriber.telegramChatId,
+    };
   }
 }
