@@ -99,7 +99,7 @@ export class TelegrafProvider implements OnModuleDestroy {
       });
 
       if (compareResult.isLeft() || !compareResult.value.isMatch) {
-        ctx.reply('Código inválido 2');
+        ctx.reply('Código inválido');
         return;
       }
 
