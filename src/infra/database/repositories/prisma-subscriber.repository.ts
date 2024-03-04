@@ -63,6 +63,9 @@ export class PrismaSubscriberRepository implements SubscriberRepository {
         id: subscriber.id,
         recipientId: subscriber.recipientId,
         telegramId: subscriber.telegramChatId,
+        email: subscriber.email,
+        authCode: subscriber.authCode,
+        createdAt: new Date(),
       },
     });
   }
