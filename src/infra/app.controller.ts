@@ -2,7 +2,9 @@ import { SendNotificationUseCase } from '@domain/notification/use-cases/send-not
 import { CreateMobilePushSubscription } from '@domain/subscriber/use-cases/create-mobile-push-subscription';
 import { CreateSubscriber } from '@domain/subscriber/use-cases/create-subscriber';
 import { CreateWebPushSubscription } from '@domain/subscriber/use-cases/create-web-push-subscription';
+import { FindSubscriberByRecipientId } from '@domain/subscriber/use-cases/find-subscriber-by-recipient-id';
 import { SubscribeInChannel } from '@domain/subscriber/use-cases/subscribe-in-channel';
+import { UpdateSubscriberEmailByRecipientId } from '@domain/subscriber/use-cases/update-subscriber-email-by-recipient-id';
 import { Controller } from '@nestjs/common';
 import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 import { CreateMobilePushSubscriptionDto } from './dto/create-mobile-push-subscription.dto';
@@ -11,7 +13,6 @@ import { NewSubscriberDto } from './dto/new-subscriber.dto';
 import { RegisterSubscriberInChannelDto } from './dto/register-subscriber-in-channel.dto';
 import { SendNotificationDto } from './dto/send-notification.dto';
 import { EnvService } from './env/env.service';
-import { FindSubscriberByRecipientId } from '@domain/subscriber/use-cases/find-subscriber-by-recipient-id';
 
 @Controller('client')
 export class AppController {
@@ -23,11 +24,24 @@ export class AppController {
     private readonly createWebPushSubscription: CreateWebPushSubscription,
     private readonly findSubscriberByRecipientId: FindSubscriberByRecipientId,
     private readonly env: EnvService,
+    private readonly updateSubscriberEmailByRecipientId: UpdateSubscriberEmailByRecipientId,
   ) {}
 
   @EventPattern('new-subscriber')
   async onNewSubscriber(@Payload() data: NewSubscriberDto) {
     await this.createSubscriber.execute(data);
+  }
+
+  @EventPattern('subscriber-email-updated')
+  async onSubscriberEmailUpdated(@Payload() { recipientId, email }: { recipientId: string; email: string }) {
+    const results = await this.updateSubscriberEmailByRecipientId.execute({
+      recipientId,
+      email,
+    });
+
+    if (results.isLeft()) {
+      throw results.value;
+    }
   }
 
   @MessagePattern('register-subscriber-in-channel')

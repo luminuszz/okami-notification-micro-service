@@ -64,6 +64,10 @@ export class Subscriber extends AggregateRoot<SubscriberProps> {
     return this.props.email;
   }
 
+  public set email(email: string) {
+    this.props.email = email;
+  }
+
   get authCode() {
     return this.props.authCode as string;
   }

@@ -11,6 +11,7 @@ import { UpdateSubscriberTelegramChatId } from '@domain/subscriber/use-cases/upd
 import { FindSubscriberByEmail } from '@domain/subscriber/use-cases/find-subscriber-by-email';
 import { SendAuthCodeEmail } from '@domain/subscriber/use-cases/send-auth-code-mail';
 import { MailModule } from '../mail/mail.module';
+import { UpdateSubscriberEmailByRecipientId } from '@domain/subscriber/use-cases/update-subscriber-email-by-recipient-id';
 
 @Module({
   imports: [PrismaModule, MailModule],
@@ -25,6 +26,7 @@ import { MailModule } from '../mail/mail.module';
     UpdateSubscriberTelegramChatId,
     FindSubscriberByEmail,
     SendAuthCodeEmail,
+    UpdateSubscriberEmailByRecipientId,
   ],
   exports: [
     CreateWebPushSubscription,
@@ -37,6 +39,7 @@ import { MailModule } from '../mail/mail.module';
     UpdateSubscriberTelegramChatId,
     FindSubscriberByEmail,
     SendAuthCodeEmail,
+    UpdateSubscriberEmailByRecipientId,
   ],
 })
 export class SubscriberModule {}
