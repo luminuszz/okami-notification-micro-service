@@ -33,6 +33,19 @@ export class CreateWebPushSubscription
 
     const { subscriber } = results.value;
 
+    const existsWebPushSubscription = await this.webPushSubscriptionRepository.findSubscriptionByEndpoint(
+      input.endpoint,
+    );
+
+    if (existsWebPushSubscription) {
+      existsWebPushSubscription.webPushSubscriptionAuth = input.webPushSubscriptionAuth;
+      existsWebPushSubscription.webPushSubscriptionP256dh = input.webPushSubscriptionP256dh;
+
+      await this.webPushSubscriptionRepository.save(existsWebPushSubscription);
+
+      return right({ webPushSubscription: existsWebPushSubscription });
+    }
+
     const webPushSubscription = WebPushSubscription.create({
       endpoint: input.endpoint,
       subscriberId: subscriber.id,

@@ -3,5 +3,7 @@ import { WebPushSubscription } from '@domain/subscriber/entities/web-push-subscr
 export abstract class WePushSubscriptionRepository {
   abstract create(webPushSubscription: WebPushSubscription): Promise<void>;
   abstract findById(id: string): Promise<WebPushSubscription | null>;
+  abstract findSubscriptionByEndpoint(endpoint: string): Promise<WebPushSubscription | null>;
+  abstract save(webPushSubscription: WebPushSubscription): Promise<void>;
   abstract delete(id: string): Promise<void>;
 }

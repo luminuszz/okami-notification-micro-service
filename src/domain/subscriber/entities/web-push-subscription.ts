@@ -23,8 +23,16 @@ export class WebPushSubscription extends AggregateRoot<WePushSubscriptionProps> 
     return this.props.webPushSubscriptionAuth;
   }
 
+  set webPushSubscriptionAuth(value: string) {
+    this.props.webPushSubscriptionAuth = value;
+  }
+
   get webPushSubscriptionP256dh(): string {
     return this.props.webPushSubscriptionP256dh;
+  }
+
+  set webPushSubscriptionP256dh(value: string) {
+    this.props.webPushSubscriptionP256dh = value;
   }
 
   get endpoint(): string {
