@@ -4,20 +4,24 @@ import { Notification } from '@domain/notification/notifications';
 import { Injectable } from '@nestjs/common';
 import { Notification as PrismaNotification } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
+import { UniqueEntityID } from '@core/entities/unique-entity-id';
 
 @Injectable()
 export class PrismaNotificationRepository implements NotificationRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   private parseToEntity(prismaNotification: PrismaNotification): Notification {
-    return Notification.create({
-      content: prismaNotification.content,
-      createdAt: prismaNotification.createdAt,
-      subscriberId: prismaNotification.subscriberId,
-      channels: prismaNotification.channels as any,
-      providers: prismaNotification.providers as any,
-      readAt: prismaNotification.readAt,
-    });
+    return Notification.create(
+      {
+        content: prismaNotification.content,
+        createdAt: prismaNotification.createdAt,
+        subscriberId: prismaNotification.subscriberId,
+        channels: prismaNotification.channels as any,
+        providers: prismaNotification.providers as any,
+        readAt: prismaNotification.readAt,
+      },
+      new UniqueEntityID(prismaNotification.id),
+    );
   }
 
   async create(notification: Notification): Promise<void> {
@@ -45,6 +49,8 @@ export class PrismaNotificationRepository implements NotificationRepository {
         createdAt: 'desc',
       },
     });
+
+    console.log(results);
 
     return results.map((notification) => this.parseToEntity(notification));
   }

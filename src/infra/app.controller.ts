@@ -14,6 +14,7 @@ import { NewSubscriberDto } from './dto/new-subscriber.dto';
 import { RegisterSubscriberInChannelDto } from './dto/register-subscriber-in-channel.dto';
 import { SendNotificationDto } from './dto/send-notification.dto';
 import { EnvService } from './env/env.service';
+import { recentNotificationsSchemaResponse } from './models';
 
 @Controller('client')
 export class AppController {
@@ -130,6 +131,6 @@ export class AppController {
       throw results.value;
     }
 
-    return results.value.notifications;
+    return recentNotificationsSchemaResponse.parse(results.value.notifications);
   }
 }
