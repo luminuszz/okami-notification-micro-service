@@ -44,13 +44,13 @@ export class PrismaNotificationRepository implements NotificationRepository {
     const results = await this.prisma.notification.findMany({
       where: {
         subscriberId,
+        readAt: null,
       },
       orderBy: {
         createdAt: 'desc',
       },
+      take: 8,
     });
-
-    console.log(results);
 
     return results.map((notification) => this.parseToEntity(notification));
   }
