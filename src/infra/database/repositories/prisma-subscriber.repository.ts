@@ -1,18 +1,17 @@
+import { UniqueEntityID } from '@core/entities/unique-entity-id';
+import { MobilePushSubscription } from '@domain/subscriber/entities/mobile-push-subscription';
 import { Subscriber } from '@domain/subscriber/entities/subscriber';
+import { WebPushSubscription } from '@domain/subscriber/entities/web-push-subscription';
 import { SubscriberRepository } from '@domain/subscriber/use-cases/repositories/subscriber-repository';
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
 import {
-  Subscriber as PrismaSubscriber,
-  WebPushSubscription as PrismaWebPushSubscription,
   MobileSubscription as PrismaMobileSubscription,
   Notification as PrismaNotification,
+  Subscriber as PrismaSubscriber,
+  WebPushSubscription as PrismaWebPushSubscription,
 } from '@prisma/client';
-import { UniqueEntityID } from '@core/entities/unique-entity-id';
 import { map } from 'lodash';
-import { WebPushSubscription } from '@domain/subscriber/entities/web-push-subscription';
-import { MobilePushSubscription } from '@domain/subscriber/entities/mobile-push-subscription';
-import { Notification } from '@domain/notification/notifications';
+import { PrismaService } from '../prisma.service';
 
 interface PrismaSubscriberWithRelations extends PrismaSubscriber {
   webPushSubscriptions?: PrismaWebPushSubscription[];
@@ -40,19 +39,6 @@ export class PrismaSubscriberRepository implements SubscriberRepository {
               subscriptionToken: content.subscriptionToken,
             },
             new UniqueEntityID(content.id),
-          ),
-        ),
-        notifications: map(subscriber.notifications, (data) =>
-          Notification.create(
-            {
-              content: data.content,
-              createdAt: data.createdAt,
-              subscriberId: data.subscriberId,
-              channels: data.channels as any,
-              providers: data.providers as any,
-              readAt: data.readAt,
-            },
-            new UniqueEntityID(data.id),
           ),
         ),
         webPushSubscriptions: map(subscriber.webPushSubscriptions, (content) =>
