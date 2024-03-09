@@ -2,6 +2,7 @@ import { SendNotificationUseCase } from '@domain/notification/use-cases/send-not
 import { CreateMobilePushSubscription } from '@domain/subscriber/use-cases/create-mobile-push-subscription';
 import { CreateSubscriber } from '@domain/subscriber/use-cases/create-subscriber';
 import { CreateWebPushSubscription } from '@domain/subscriber/use-cases/create-web-push-subscription';
+import { FetchRecentSubscriberNotifications } from '@domain/subscriber/use-cases/fetch-recent-subscriber-notifications';
 import { FindSubscriberByRecipientId } from '@domain/subscriber/use-cases/find-subscriber-by-recipient-id';
 import { SubscribeInChannel } from '@domain/subscriber/use-cases/subscribe-in-channel';
 import { UpdateSubscriberEmailByRecipientId } from '@domain/subscriber/use-cases/update-subscriber-email-by-recipient-id';
@@ -25,6 +26,7 @@ export class AppController {
     private readonly findSubscriberByRecipientId: FindSubscriberByRecipientId,
     private readonly env: EnvService,
     private readonly updateSubscriberEmailByRecipientId: UpdateSubscriberEmailByRecipientId,
+    private readonly fetchRecentSubscriberNotifications: FetchRecentSubscriberNotifications,
   ) {}
 
   @EventPattern('new-subscriber')
@@ -118,5 +120,16 @@ export class AppController {
       recipientId: subscriber.recipientId,
       telegramChatId: subscriber.telegramChatId,
     };
+  }
+
+  @MessagePattern('get-recent-notifications')
+  async retrieveRecentSubscriberNotifications(@Payload() { recipientId }: { recipientId: string }) {
+    const results = await this.fetchRecentSubscriberNotifications.execute({ recipientId });
+
+    if (results.isLeft()) {
+      throw results.value;
+    }
+
+    return results.value.notifications;
   }
 }

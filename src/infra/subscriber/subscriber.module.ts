@@ -12,6 +12,7 @@ import { FindSubscriberByEmail } from '@domain/subscriber/use-cases/find-subscri
 import { SendAuthCodeEmail } from '@domain/subscriber/use-cases/send-auth-code-mail';
 import { MailModule } from '../mail/mail.module';
 import { UpdateSubscriberEmailByRecipientId } from '@domain/subscriber/use-cases/update-subscriber-email-by-recipient-id';
+import { FetchRecentSubscriberNotifications } from '@domain/subscriber/use-cases/fetch-recent-subscriber-notifications';
 
 @Module({
   imports: [PrismaModule, MailModule],
@@ -27,6 +28,7 @@ import { UpdateSubscriberEmailByRecipientId } from '@domain/subscriber/use-cases
     FindSubscriberByEmail,
     SendAuthCodeEmail,
     UpdateSubscriberEmailByRecipientId,
+    FetchRecentSubscriberNotifications,
   ],
   exports: [
     CreateWebPushSubscription,
@@ -40,6 +42,7 @@ import { UpdateSubscriberEmailByRecipientId } from '@domain/subscriber/use-cases
     FindSubscriberByEmail,
     SendAuthCodeEmail,
     UpdateSubscriberEmailByRecipientId,
+    FetchRecentSubscriberNotifications,
   ],
 })
 export class SubscriberModule {}

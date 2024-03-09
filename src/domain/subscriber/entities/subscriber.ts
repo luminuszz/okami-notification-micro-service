@@ -3,6 +3,7 @@ import { UniqueEntityID } from '@core/entities/unique-entity-id';
 import { Channel } from './channel';
 import { MobilePushSubscription } from './mobile-push-subscription';
 import { WebPushSubscription } from './web-push-subscription';
+import { Notification } from '@domain/notification/notifications';
 
 export interface SubscriberProps {
   recipientId: string;
@@ -15,6 +16,7 @@ export interface SubscriberProps {
   mobilePushSubscriptions?: MobilePushSubscription[];
   webPushSubscriptions?: WebPushSubscription[];
   authCode?: string;
+  notifications?: Notification[];
 }
 
 export class Subscriber extends AggregateRoot<SubscriberProps> {

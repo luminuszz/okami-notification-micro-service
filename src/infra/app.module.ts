@@ -7,7 +7,6 @@ import { SubscriberModule } from './subscriber/subscriber.module';
 
 @Module({
   imports: [PrismaModule, NotificationModule, EnvModule, SubscriberModule],
-  providers: [],
   controllers: [AppController],
 })
 export class AppModule {}
