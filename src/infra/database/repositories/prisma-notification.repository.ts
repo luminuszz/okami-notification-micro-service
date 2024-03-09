@@ -1,10 +1,9 @@
+import { DomainEvents } from '@core/domain-events/domain-events';
 import { NotificationRepository } from '@domain/notification/notification.repository';
-import { PrismaService } from '../prisma.service';
 import { Notification } from '@domain/notification/notifications';
 import { Injectable } from '@nestjs/common';
-import { DomainEvents } from '@core/domain-events/domain-events';
-import { map } from 'lodash';
 import { Notification as PrismaNotification } from '@prisma/client';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class PrismaNotificationRepository implements NotificationRepository {
@@ -47,6 +46,6 @@ export class PrismaNotificationRepository implements NotificationRepository {
       },
     });
 
-    return map(results, this.parseToEntity);
+    return results.map((notification) => this.parseToEntity(notification));
   }
 }
