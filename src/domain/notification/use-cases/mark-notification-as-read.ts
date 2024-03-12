@@ -22,9 +22,11 @@ export class MarkNotificationAsRead
 
     if (!existsNotification) return left(new ResourceNotFound('Notification'));
 
-    existsNotification.markAsRead();
+    if (!existsNotification.readAt) {
+      existsNotification.markAsRead();
 
-    await this.notificationRepository.save(existsNotification);
+      await this.notificationRepository.save(existsNotification);
+    }
 
     return right({
       notification: existsNotification,
