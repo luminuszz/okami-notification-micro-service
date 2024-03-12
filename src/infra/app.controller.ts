@@ -15,6 +15,7 @@ import { RegisterSubscriberInChannelDto } from './dto/register-subscriber-in-cha
 import { SendNotificationDto } from './dto/send-notification.dto';
 import { EnvService } from './env/env.service';
 import { recentNotificationsSchemaResponse } from './models';
+import { MarkNotificationAsRead } from '@domain/notification/use-cases/mark-notification-as-read';
 
 @Controller('client')
 export class AppController {
@@ -28,6 +29,7 @@ export class AppController {
     private readonly env: EnvService,
     private readonly updateSubscriberEmailByRecipientId: UpdateSubscriberEmailByRecipientId,
     private readonly fetchRecentSubscriberNotifications: FetchRecentSubscriberNotifications,
+    private readonly markNotificationAsRead: MarkNotificationAsRead,
   ) {}
 
   @EventPattern('new-subscriber')
@@ -132,5 +134,14 @@ export class AppController {
     }
 
     return recentNotificationsSchemaResponse.parse(results.value.notifications);
+  }
+
+  @EventPattern('mark-notification-as-read')
+  async markNotificationASRedHandler(@Payload() { notificationId }: { notificationId: string }) {
+    const results = await this.markNotificationAsRead.execute({ notificationId });
+
+    if (results.isLeft()) {
+      throw results.value;
+    }
   }
 }

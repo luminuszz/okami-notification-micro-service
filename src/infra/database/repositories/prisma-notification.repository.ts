@@ -54,4 +54,31 @@ export class PrismaNotificationRepository implements NotificationRepository {
 
     return results.map((notification) => this.parseToEntity(notification));
   }
+
+  async findById(notificationId: string): Promise<Notification | null> {
+    const results = await this.prisma.notification.findUnique({
+      where: {
+        id: notificationId,
+      },
+    });
+
+    return results ? this.parseToEntity(results) : null;
+  }
+
+  async save(notification: Notification): Promise<void> {
+    await this.prisma.notification.update({
+      where: {
+        id: notification.id,
+      },
+
+      data: {
+        channels: notification.channels,
+        content: notification.content,
+        createdAt: notification.createdAt,
+        providers: notification.providers,
+        subscriberId: notification.subscriberId,
+        readAt: notification.readAt,
+      },
+    });
+  }
 }

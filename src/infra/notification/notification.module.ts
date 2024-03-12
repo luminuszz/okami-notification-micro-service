@@ -18,6 +18,7 @@ import { FindSubscriberByEmail } from '@domain/subscriber/use-cases/find-subscri
 import { MailModule } from '../mail/mail.module';
 import { SendAuthCodeEmail } from '@domain/subscriber/use-cases/send-auth-code-mail';
 import { CompareSubscriberAuthCode } from '@domain/subscriber/use-cases/compare-subscriber-auth-code';
+import { MarkNotificationAsRead } from '@domain/notification/use-cases/mark-notification-as-read';
 
 const DomainEventsHandlers = [OnNotificationCreated];
 
@@ -55,7 +56,8 @@ const NotificationProvidersHandlers = [
     SendAuthCodeEmail,
     CompareSubscriberAuthCode,
     FindSubscriberByRecipientId,
+    MarkNotificationAsRead,
   ],
-  exports: [SendNotificationUseCase, TelegrafProvider],
+  exports: [SendNotificationUseCase, TelegrafProvider, MarkNotificationAsRead],
 })
 export class NotificationModule {}
