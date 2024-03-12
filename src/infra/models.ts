@@ -5,6 +5,6 @@ export const recentNotificationsSchemaResponse = z.array(
     content: z.string().transform((value) => JSON.parse(value)),
     createdAt: z.date().transform((value) => value.toISOString()),
     id: z.string(),
-    readAt: z.string().nullable(),
+    readAt: z.string().or(z.date()).nullable(),
   }),
 );
