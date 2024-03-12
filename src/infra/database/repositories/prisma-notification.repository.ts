@@ -44,7 +44,6 @@ export class PrismaNotificationRepository implements NotificationRepository {
     const results = await this.prisma.notification.findMany({
       where: {
         subscriberId,
-        readAt: null,
       },
       orderBy: {
         createdAt: 'desc',
