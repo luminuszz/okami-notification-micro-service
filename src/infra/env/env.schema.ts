@@ -14,10 +14,7 @@ export const envSchema = z.object({
   WEB_PUSH_PRIVATE_KEY: z.string(),
   TELEGRAM_NOTIFICATION_BOT: z.string(),
   RESEND_API_SECRET_KEY: z.string(),
-  REDIS_HOST: z.string(),
-  REDIS_PORT: z.coerce.number(),
-  REDIS_USER: z.string(),
-  REDIS_PASSWORD: z.string(),
+  RABBIT_MQ_URL: z.string(),
 });
 
 export type EnvType = z.infer<typeof envSchema>;
