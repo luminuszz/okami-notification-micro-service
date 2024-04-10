@@ -10,6 +10,10 @@ import { envSchema } from '@infra/env/env.schema';
     transport: Transport.RMQ,
     options: {
       urls: [env.RABBIT_MQ_URL],
+      queue: 'notification-service-queue',
+      queueOptions: {
+        durable: true,
+      },
     },
   });
 
