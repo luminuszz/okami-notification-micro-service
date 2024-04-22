@@ -12,7 +12,7 @@ import { envSchema } from '@infra/env/env.schema';
       urls: [env.RABBIT_MQ_URL],
       queue: 'notification-service-queue',
       queueOptions: {
-        durable: true,
+        durable: false,
       },
     },
   });

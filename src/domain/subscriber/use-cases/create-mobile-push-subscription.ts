@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { MobilePushSubscriptionRepository } from './repositories/mobile-push-subscription-repository';
 import { FindSubscriberByRecipientId } from './find-subscriber-by-recipient-id';
 import { ResourceNotFound } from './errors/resource-not-found';
+import { InvalidOperation } from '@domain/subscriber/use-cases/errors/invalid-operation';
 
 interface CreateMobilePushSubscriptionRequest {
   recipientId: string;
@@ -12,7 +13,7 @@ interface CreateMobilePushSubscriptionRequest {
 }
 
 type CreateMobilePushSubscriptionResponse = Either<
-  ResourceNotFound,
+  ResourceNotFound | InvalidOperation,
   { mobilePushSubscription: MobilePushSubscription }
 >;
 
@@ -33,6 +34,12 @@ export class CreateMobilePushSubscription
 
     if (results.isLeft()) {
       return left(results.value);
+    }
+
+    const existsSubscription = await this.mobilePushSubscriptionRepository.findBySubscriptionToken(subscriptionToken);
+
+    if (existsSubscription) {
+      return left(new InvalidOperation('Subscription already exists'));
     }
 
     const { subscriber } = results.value;
