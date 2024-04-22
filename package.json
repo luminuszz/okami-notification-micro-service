@@ -32,6 +32,7 @@
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.3",
     "ioredis": "^5.3.2",
+    "kafkajs": "^2.2.4",
     "lodash": "^4.17.21",
     "pm2": "^5.3.1",
     "prisma": "^5.9.1",
