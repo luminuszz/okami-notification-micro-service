@@ -17,7 +17,7 @@ import { Transport, MicroserviceOptions } from '@nestjs/microservices';
         sasl: {
           username: env.KAFKA_USER,
           password: env.KAFKA_PASSWORD,
-          mechanism: 'plain',
+          mechanism: 'scram-sha-256',
         },
       },
       consumer: {
