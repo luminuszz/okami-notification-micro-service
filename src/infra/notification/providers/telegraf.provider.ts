@@ -42,6 +42,7 @@ export class TelegrafProvider implements OnModuleDestroy, OnModuleInit {
     });
 
     this.runVincularChatCommand();
+    this.runConfirmarChatCommand();
 
     await this.instance.launch();
   }
@@ -74,7 +75,9 @@ export class TelegrafProvider implements OnModuleDestroy, OnModuleInit {
         );
       });
     });
+  }
 
+  private runConfirmarChatCommand() {
     this.instance.command('confirmarchat', async (ctx) => {
       await ctx.reply('Informe o código que você recebeu por e-mail');
 
