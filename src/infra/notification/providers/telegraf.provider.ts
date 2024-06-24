@@ -3,13 +3,13 @@ import { CompareSubscriberAuthCode } from '@domain/subscriber/use-cases/compare-
 import { FindSubscriberByEmail } from '@domain/subscriber/use-cases/find-subscriber-by-email';
 import { SendAuthCodeEmail } from '@domain/subscriber/use-cases/send-auth-code-mail';
 import { UpdateSubscriberTelegramChatId } from '@domain/subscriber/use-cases/update-subscriber-telegram-chat-id';
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Telegraf } from 'telegraf';
 import { message } from 'telegraf/filters';
 import { z } from 'zod';
 
 @Injectable()
-export class TelegrafProvider implements OnModuleDestroy {
+export class TelegrafProvider implements OnModuleDestroy, OnModuleInit {
   public instance: Telegraf;
 
   private memoryUsers = new Map<string, { email: string }>();
@@ -22,9 +22,12 @@ export class TelegrafProvider implements OnModuleDestroy {
     private readonly findSubscriberByEmail: FindSubscriberByEmail,
   ) {
     this.instance = new Telegraf(this.env.get('TELEGRAM_NOTIFICATION_BOT'));
-
-    this.startBotProcess();
   }
+
+  async onModuleInit() {
+    await this.startBotProcess();
+  }
+
   onModuleDestroy() {
     if (this.instance) {
       this.instance.stop('SIGTERM');
@@ -63,7 +66,7 @@ export class TelegrafProvider implements OnModuleDestroy {
           `Se **${email.data}** corresponder aos dados enviaremos um e-mail 
           com o código de acesso  use /confirmarchat e informe o código que você recebeu por e-mail
         
-          /confirmarchat {seu codigo}
+          /confirmarchat
           `,
           {
             reply_to_message_id: ctx.message.message_id,
@@ -73,43 +76,44 @@ export class TelegrafProvider implements OnModuleDestroy {
     });
 
     this.instance.command('confirmarchat', async (ctx) => {
-      const authCode = z
-        .string()
-        .transform((value) => value.replaceAll('/confirmarchat', '').trim())
-        .safeParse(ctx.message.text);
+      await ctx.reply('Informe o código que você recebeu por e-mail');
 
-      if (!authCode.success) {
-        ctx.reply('Código inválido');
-        return;
-      }
+      this.instance.on(message('text'), async (ctx) => {
+        const authCode = z.string().length(6, 'Código inválido').safeParse(ctx.message.text);
 
-      const currentUserEmail = this.memoryUsers.get(String(ctx.chat.id))?.email ?? '';
+        if (!authCode.success) {
+          await ctx.reply('Código inválido');
+          return;
+        }
 
-      const results = await this.findSubscriberByEmail.execute({ email: currentUserEmail });
+        const currentUserEmail = this.memoryUsers.get(String(ctx.chat.id))?.email ?? '';
 
-      if (results.isLeft()) {
-        ctx.reply('Email não encontrado');
-        return;
-      }
+        const results = await this.findSubscriberByEmail.execute({ email: currentUserEmail });
 
-      const { subscriber } = results.value;
+        if (results.isLeft()) {
+          await ctx.reply('Email não encontrado');
+          return;
+        }
 
-      const compareResult = await this.compareAuthCode.execute({
-        authCode: authCode.data,
-        userId: subscriber.id,
+        const { subscriber } = results.value;
+
+        const compareResult = await this.compareAuthCode.execute({
+          authCode: authCode.data,
+          userId: subscriber.id,
+        });
+
+        if (compareResult.isLeft() || !compareResult.value.isMatch) {
+          await ctx.reply('Código inválido');
+          return;
+        }
+
+        await this.updateTelegramChatId.execute({
+          recipientId: subscriber.recipientId,
+          telegramChatId: String(ctx.chat.id),
+        });
+
+        await ctx.reply(`Chat vinculado com sucesso! Você receberá notificações por aqui !`);
       });
-
-      if (compareResult.isLeft() || !compareResult.value.isMatch) {
-        ctx.reply('Código inválido');
-        return;
-      }
-
-      await this.updateTelegramChatId.execute({
-        recipientId: subscriber.recipientId,
-        telegramChatId: String(ctx.chat.id),
-      });
-
-      await ctx.reply(`Chat vinculado com sucesso! Você receberá notificações por aqui !`);
     });
   }
 }
