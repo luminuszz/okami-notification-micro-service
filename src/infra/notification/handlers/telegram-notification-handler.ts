@@ -36,18 +36,14 @@ export class TelegramNotificationHandler {
     const isAllowedImageFiletype = ['png', 'jpg', 'jpeg', 'webp'].includes(content?.imageUrl?.split('.')?.pop() ?? '');
 
     if (isAllowedImageFiletype) {
-      this.telegrafProvider.instance.telegram.sendPhoto(subscriber.telegramChatId, content.imageUrl, {
+      this.telegrafProvider.bot.telegram.sendPhoto(subscriber.telegramChatId, content.imageUrl, {
         caption,
         parse_mode: 'MarkdownV2',
       });
     } else {
-      this.telegrafProvider.instance.telegram.sendMessage(
-        subscriber.telegramChatId,
-        this.parseContent(content.message),
-        {
-          parse_mode: 'MarkdownV2',
-        },
-      );
+      this.telegrafProvider.bot.telegram.sendMessage(subscriber.telegramChatId, this.parseContent(content.message), {
+        parse_mode: 'MarkdownV2',
+      });
     }
   }
 }

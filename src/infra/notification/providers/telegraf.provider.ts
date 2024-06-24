@@ -8,11 +8,23 @@ import { Telegraf } from 'telegraf';
 import { message } from 'telegraf/filters';
 import { z } from 'zod';
 
+const payloadEmailSchema = z
+  .string({ invalid_type_error: 'Valor inválido', required_error: 'Informe o email' })
+  .email('Informe um e-mail válido');
+
+type UserMetadata = {
+  email: string;
+  chatId: string;
+  emailSanded: boolean;
+};
+
+const payloadAthCodeSchema = z.string().min(6, 'Código inválido').max(6, 'Código inválido');
+
 @Injectable()
 export class TelegrafProvider implements OnModuleDestroy, OnModuleInit {
-  public instance: Telegraf;
+  public bot: Telegraf;
 
-  private memoryUsers = new Map<string, { email: string }>();
+  private memoryUsers = new Map<string, UserMetadata>();
 
   constructor(
     private readonly env: EnvService,
@@ -21,7 +33,7 @@ export class TelegrafProvider implements OnModuleDestroy, OnModuleInit {
     private readonly compareAuthCode: CompareSubscriberAuthCode,
     private readonly findSubscriberByEmail: FindSubscriberByEmail,
   ) {
-    this.instance = new Telegraf(this.env.get('TELEGRAM_NOTIFICATION_BOT'));
+    this.bot = new Telegraf(this.env.get('TELEGRAM_NOTIFICATION_BOT'));
   }
 
   async onModuleInit() {
@@ -29,14 +41,13 @@ export class TelegrafProvider implements OnModuleDestroy, OnModuleInit {
   }
 
   onModuleDestroy() {
-    if (this.instance) {
-      this.instance.stop('SIGTERM');
+    if (this.bot) {
+      this.bot.stop('SIGTERM');
     }
   }
 
   private async startBotProcess() {
-    this.instance.start((ctx) => {
-      console.log('started:', ctx.from);
+    this.bot.start((ctx) => {
       ctx.reply('Bem vindo ao Okami Bot Notifier');
       ctx.reply('Para receber notificações das suas obras favoritas, use o comando /vincularchat');
     });
@@ -44,27 +55,24 @@ export class TelegrafProvider implements OnModuleDestroy, OnModuleInit {
     this.runVincularChatCommand();
     this.runConfirmarChatCommand();
 
-    await this.instance.launch();
+    this.handleReceivedMessage();
+
+    await this.bot.launch();
   }
 
-  private runVincularChatCommand() {
-    this.instance.command('vincularchat', async (ctx) => {
-      ctx.reply('Informe seu email na plataforma Okami');
+  private handleReceivedMessage() {
+    this.bot.on(message('text'), async (ctx) => {
+      const isValidEmail = payloadEmailSchema.safeParse(ctx.message.text);
 
-      this.instance.on(message('text'), async (ctx) => {
-        const email = z.string().email().safeParse(ctx.message.text);
+      if (isValidEmail.success) {
+        const email = isValidEmail.data;
 
-        if (!email.success) {
-          ctx.reply('Email inválido');
-          return;
-        }
+        await this.sendAuthCodeEmail.execute({ email });
 
-        await this.sendAuthCodeEmail.execute({ email: email.data });
-
-        this.memoryUsers.set(String(ctx.chat.id), { email: email.data });
+        this.memoryUsers.set(String(ctx.chat.id), { email, chatId: String(ctx.chat.id), emailSanded: true });
 
         await ctx.reply(
-          `Se **${email.data}** corresponder aos dados enviaremos um e-mail 
+          `Se **${email}** corresponder aos dados enviaremos um e-mail 
           com o código de acesso  use /confirmarchat e informe o código que você recebeu por e-mail
         
           /confirmarchat
@@ -73,22 +81,13 @@ export class TelegrafProvider implements OnModuleDestroy, OnModuleInit {
             reply_to_message_id: ctx.message.message_id,
           },
         );
-      });
-    });
-  }
 
-  private runConfirmarChatCommand() {
-    this.instance.command('confirmarchat', async (ctx) => {
-      await ctx.reply('Informe o código que você recebeu por e-mail');
+        return;
+      }
 
-      this.instance.on(message('text'), async (ctx) => {
-        const authCode = z.string().length(6, 'Código inválido').safeParse(ctx.message.text);
+      const isValidAuthCode = payloadAthCodeSchema.safeParse(ctx.message.text);
 
-        if (!authCode.success) {
-          await ctx.reply('Código inválido');
-          return;
-        }
-
+      if (isValidAuthCode.success) {
         const currentUserEmail = this.memoryUsers.get(String(ctx.chat.id))?.email ?? '';
 
         const results = await this.findSubscriberByEmail.execute({ email: currentUserEmail });
@@ -101,7 +100,7 @@ export class TelegrafProvider implements OnModuleDestroy, OnModuleInit {
         const { subscriber } = results.value;
 
         const compareResult = await this.compareAuthCode.execute({
-          authCode: authCode.data,
+          authCode: isValidAuthCode.data,
           userId: subscriber.id,
         });
 
@@ -116,7 +115,23 @@ export class TelegrafProvider implements OnModuleDestroy, OnModuleInit {
         });
 
         await ctx.reply(`Chat vinculado com sucesso! Você receberá notificações por aqui !`);
-      });
+
+        this.memoryUsers.delete(String(ctx.chat.id));
+
+        return;
+      }
+    });
+  }
+
+  private runVincularChatCommand() {
+    this.bot.command('vincularchat', async (ctx) => {
+      await ctx.reply('Informe seu email na plataforma Okami');
+    });
+  }
+
+  private runConfirmarChatCommand() {
+    this.bot.command('confirmarchat', async (ctx) => {
+      await ctx.reply('Informe o código que você recebeu por e-mail');
     });
   }
 }
