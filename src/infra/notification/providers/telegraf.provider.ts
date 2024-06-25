@@ -3,7 +3,7 @@ import { CompareSubscriberAuthCode } from '@domain/subscriber/use-cases/compare-
 import { FindSubscriberByEmail } from '@domain/subscriber/use-cases/find-subscriber-by-email';
 import { SendAuthCodeEmail } from '@domain/subscriber/use-cases/send-auth-code-mail';
 import { UpdateSubscriberTelegramChatId } from '@domain/subscriber/use-cases/update-subscriber-telegram-chat-id';
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Telegraf } from 'telegraf';
 import { message } from 'telegraf/filters';
 import { z } from 'zod';
@@ -21,7 +21,7 @@ type UserMetadata = {
 const payloadAthCodeSchema = z.string().min(6, 'Código inválido').max(6, 'Código inválido');
 
 @Injectable()
-export class TelegrafProvider implements OnModuleDestroy, OnModuleInit {
+export class TelegrafProvider implements OnModuleDestroy {
   public bot: Telegraf;
 
   private memoryUsers = new Map<string, UserMetadata>();
@@ -34,10 +34,8 @@ export class TelegrafProvider implements OnModuleDestroy, OnModuleInit {
     private readonly findSubscriberByEmail: FindSubscriberByEmail,
   ) {
     this.bot = new Telegraf(this.env.get('TELEGRAM_NOTIFICATION_BOT'));
-  }
 
-  async onModuleInit() {
-    await this.startBotProcess();
+    void this.startBotProcess();
   }
 
   onModuleDestroy() {
